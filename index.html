@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Autoskolas Izmaksu Kalkulators</title>
+<style>
+  :root {
+    --bg: #F5F0E8;
+    --card: #FFFFFF;
+    --accent: #1B4D3E;
+    --accent-light: #2A7A5E;
+    --highlight: #E8A838;
+    --highlight-light: #FFF3DC;
+    --text: #1A1A1A;
+    --text-secondary: #5A5A5A;
+    --border: #D4CFC5;
+    --danger: #C0392B;
+    --shadow: 0 2px 16px rgba(27,77,62,0.08);
+    --radius: 14px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Segoe UI', 'Helvetica Neue', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding-bottom: 60px;
+  }
+
+  .hero {
+    background: var(--accent);
+    color: white;
+    padding: 48px 24px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60%;
+    left: -20%;
+    width: 140%;
+    height: 200%;
+    background: radial-gradient(ellipse at 30% 50%, rgba(42,122,94,0.6) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero p {
+    margin-top: 8px;
+    font-size: 0.95rem;
+    opacity: 0.8;
+    position: relative;
+    z-index: 1;
+  }
+
+  .hero .badge {
+    display: inline-block;
+    margin-top: 14px;
+    background: var(--highlight);
+    color: var(--accent);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 14px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    position: relative;
+    z-index: 1;
+  }
+
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 24px 16px;
+  }
+
+  .section-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--accent);
+    margin-bottom: 14px;
+  }
+
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 28px;
+  }
+
+  .cat-btn {
+    position: relative;
+    background: var(--card);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 8px 14px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+    box-shadow: var(--shadow);
+  }
+
+  .cat-btn:hover {
+    border-color: var(--accent-light);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 20px rgba(27,77,62,0.12);
+  }
+
+  .cat-btn.active {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, #E8F5EE, #FFFFFF);
+  }
+
+  .cat-btn.active::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 8px;
+    height: 8px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+
+  .cat-icon { font-size: 1.6rem; margin-bottom: 4px; display: block; }
+  .cat-label { font-size: 1.1rem; font-weight: 800; color: var(--accent); display: block; }
+  .cat-desc { font-size: 0.65rem; color: var(--text-secondary); margin-top: 2px; display: block; line-height: 1.3; }
+
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 14px;
+    box-shadow: var(--shadow);
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+
+  .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .card-header h3 { font-size: 0.95rem; font-weight: 700; }
+  .card-price { font-size: 1rem; font-weight: 800; color: var(--accent); }
+  .card-note { font-size: 0.78rem; color: var(--text-secondary); line-height: 1.4; }
+  .card-note a { color: var(--accent-light); text-decoration: none; font-weight: 600; }
+
+  .slider-section { margin-top: 14px; }
+  .slider-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+  .slider-label { font-size: 0.85rem; font-weight: 600; }
+  .slider-value { font-size: 1.4rem; font-weight: 800; color: var(--accent); }
+  .slider-value span { font-size: 0.75rem; font-weight: 500; color: var(--text-secondary); }
+
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none; width: 100%; height: 6px; border-radius: 3px;
+    background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--progress, 50%), var(--border) var(--progress, 50%), var(--border) 100%);
+    outline: none;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none; width: 24px; height: 24px; border-radius: 50%;
+    background: var(--accent); border: 3px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    cursor: pointer; transition: transform 0.15s;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.15); }
+
+  .min-badge { display: inline-block; background: var(--highlight-light); color: var(--highlight); font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 6px; margin-left: 8px; }
+
+  .check-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid #F0EDE7; cursor: pointer; }
+  .check-row:last-child { border-bottom: none; }
+  .check-box { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; font-size: 0.7rem; color: transparent; }
+  .check-row.checked .check-box { background: var(--accent); border-color: var(--accent); color: white; }
+  .check-info { flex: 1; }
+  .check-info .name { font-size: 0.9rem; font-weight: 600; }
+  .check-info .desc { font-size: 0.73rem; color: var(--text-secondary); margin-top: 1px; }
+  .check-price { font-size: 0.95rem; font-weight: 700; color: var(--accent); white-space: nowrap; }
+
+  .total-card { background: var(--accent); color: white; border-radius: var(--radius); padding: 24px; margin-top: 24px; box-shadow: 0 4px 24px rgba(27,77,62,0.2); position: relative; overflow: hidden; }
+  .total-card::before { content: ''; position: absolute; top: -40%; right: -20%; width: 60%; height: 180%; background: radial-gradient(ellipse, rgba(255,255,255,0.06), transparent 60%); pointer-events: none; }
+  .total-label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; opacity: 0.7; }
+  .total-amount { font-size: 2.8rem; font-weight: 900; letter-spacing: -1px; margin-top: 4px; position: relative; z-index: 1; }
+  .total-amount sup { font-size: 1.2rem; font-weight: 700; top: -14px; position: relative; }
+  .breakdown { margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .breakdown-item { display: flex; justify-content: space-between; font-size: 0.78rem; opacity: 0.8; padding: 4px 0; }
+  .breakdown-item .amt { font-weight: 700; opacity: 1; }
+
+  .csdd-card { background: linear-gradient(135deg, #FFF9EE, #FFFFFF); border: 1px solid #E8D9B8; }
+  .csdd-tag { display: inline-block; background: var(--highlight); color: var(--accent); font-size: 0.65rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .schools-section { margin-bottom: 24px; }
+  .schools-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .school-card { background: var(--card); border-radius: var(--radius); padding: 16px 12px; box-shadow: var(--shadow); border: 1px solid rgba(0,0,0,0.04); text-align: center; transition: all 0.25s; text-decoration: none; color: var(--text); display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .school-card:hover { transform: translateY(-3px); box-shadow: 0 6px 24px rgba(27,77,62,0.14); border-color: var(--accent-light); }
+  .school-logo { width: 56px; height: 56px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 0.7rem; color: white; letter-spacing: 0.5px; text-transform: uppercase; line-height: 1.1; flex-shrink: 0; }
+  .school-name { font-size: 0.82rem; font-weight: 700; line-height: 1.2; }
+  .school-detail { font-size: 0.68rem; color: var(--text-secondary); line-height: 1.3; }
+  .school-rank { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--highlight); color: var(--accent); font-size: 0.65rem; font-weight: 800; flex-shrink: 0; }
+  .school-link-hint { font-size: 0.62rem; color: var(--accent-light); font-weight: 600; margin-top: auto; }
+
+  .disclaimer { margin-top: 24px; font-size: 0.72rem; color: var(--text-secondary); text-align: center; line-height: 1.5; padding: 0 12px; }
+  .source-list { margin-top: 8px; font-size: 0.68rem; color: var(--text-secondary); text-align: center; line-height: 1.6; }
+  .source-list a { color: var(--accent-light); text-decoration: none; }
+
+  @media (max-width: 480px) {
+    .hero h1 { font-size: 1.6rem; }
+    .total-amount { font-size: 2.2rem; }
+    .breakdown { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Autoskolas Izmaksu Kalkulators</h1>
+  <p>Aprēķini reālās izmaksas vadītāja apliecības iegūšanai Latvijā</p>
+  <div class="badge">2025/2026 cenas</div>
+</div>
+
+<div class="container">
+
+  <div class="section-title">Izvēlies kategoriju</div>
+  <div class="category-grid">
+    <div class="cat-btn active" data-cat="A" onclick="selectCategory('A')">
+      <span class="cat-icon">🏍️</span>
+      <span class="cat-label">A</span>
+      <span class="cat-desc">Motocikls</span>
+    </div>
+    <div class="cat-btn" data-cat="B" onclick="selectCategory('B')">
+      <span class="cat-icon">🚗</span>
+      <span class="cat-label">B</span>
+      <span class="cat-desc">Vieglais auto</span>
+    </div>
+    <div class="cat-btn" data-cat="C" onclick="selectCategory('C')">
+      <span class="cat-icon">🚛</span>
+      <span class="cat-label">C</span>
+      <span class="cat-desc">Kravas auto</span>
+    </div>
+    <div class="cat-btn" data-cat="D" onclick="selectCategory('D')">
+      <span class="cat-icon">🚌</span>
+      <span class="cat-label">D</span>
+      <span class="cat-desc">Autobuss</span>
+    </div>
+  </div>
+
+  <div class="schools-section">
+    <div class="section-title">Top 3 autoskolas šai kategorijai</div>
+    <div class="schools-grid" id="schools-grid"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3>📋 Reģistrācija + Teorija</h3>
+      <span class="card-price" id="theory-price">€50</span>
+    </div>
+    <div class="card-note" id="theory-note">Teorijas kurss un reģistrācija autoskolā. Ietver CSDD reģistrāciju un teorijas nodarbības.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h3>🚘 Braukšanas nodarbības</h3>
+      <span class="card-price" id="driving-total-price">€500</span>
+    </div>
+    <div class="slider-section">
+      <div class="slider-header">
+        <div>
+          <span class="slider-label">Nodarbību skaits</span>
+          <span class="min-badge" id="min-badge">min. 20</span>
+        </div>
+        <span class="slider-value" id="lesson-count-display">20 <span>nodarbības</span></span>
+      </div>
+      <input type="range" id="lesson-slider" min="1" max="60" value="20" oninput="updateDriving()">
+      <div style="display:flex;justify-content:space-between;margin-top:6px;">
+        <span style="font-size:0.7rem;color:var(--text-secondary);" id="slider-min-label">Minimums</span>
+        <span style="font-size:0.7rem;color:var(--text-secondary);">Papildus stundas</span>
+      </div>
+    </div>
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid #F0EDE7;">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span class="card-note">Vienas nodarbības cena (2 akadēmiskās stundas)</span>
+        <span style="font-weight:700;color:var(--accent);font-size:0.9rem;" id="per-lesson-price">€25</span>
+      </div>
+      <div class="card-note" style="margin-top:4px;" id="driving-note">Cena atkarīga no instruktora un mācību transportlīdzekļa.</div>
+    </div>
+  </div>
+
+  <div class="section-title">Papildus pakalpojumi</div>
+  <div class="card">
+    <div class="check-row checked" onclick="toggleCheck(this, 'firstaid')">
+      <div class="check-box">✓</div>
+      <div class="check-info">
+        <div class="name">🩹 Pirmās palīdzības kurss</div>
+        <div class="desc">12+3 akadēmiskās stundas, 2 dienu apmācība</div>
+      </div>
+      <div class="check-price" id="firstaid-price">€55</div>
+    </div>
+    <div class="check-row checked" onclick="toggleCheck(this, 'medical')">
+      <div class="check-box">✓</div>
+      <div class="check-info">
+        <div class="name">🏥 Medicīniskā komisija</div>
+        <div class="desc">Autovadītāja veselības pārbaude</div>
+      </div>
+      <div class="check-price" id="medical-price">€40</div>
+    </div>
+  </div>
+
+  <div class="section-title">CSDD Valsts eksāmeni</div>
+  <div class="card csdd-card">
+    <div style="margin-bottom:10px;"><span class="csdd-tag">CSDD Maksājumi</span></div>
+    <div class="check-row checked" onclick="toggleCheck(this, 'csdd-theory')">
+      <div class="check-box">✓</div>
+      <div class="check-info">
+        <div class="name">Teorētiskais eksāmens</div>
+        <div class="desc">CSDD valsts teorijas eksāmens</div>
+      </div>
+      <div class="check-price">€11.40</div>
+    </div>
+    <div class="check-row checked" onclick="toggleCheck(this, 'csdd-driving')">
+      <div class="check-box">✓</div>
+      <div class="check-info">
+        <div class="name">Vadīšanas eksāmens</div>
+        <div class="desc" id="csdd-driving-desc">B kategorija</div>
+      </div>
+      <div class="check-price" id="csdd-driving-price">€50.57</div>
+    </div>
+    <div class="check-row checked" onclick="toggleCheck(this, 'csdd-license')">
+      <div class="check-box">✓</div>
+      <div class="check-info">
+        <div class="name">Vadītāja apliecība</div>
+        <div class="desc">Apliecības izsniegšana</div>
+      </div>
+      <div class="check-price">€22.41</div>
+    </div>
+  </div>
+
+  <div class="total-card" id="total-card">
+    <div class="total-label">Kopējās izmaksas</div>
+    <div class="total-amount" id="total-amount">€678<sup>.38</sup></div>
+    <div class="breakdown" id="breakdown"></div>
+  </div>
+
+  <div class="disclaimer">
+    * Cenas ir orientējošas un var atšķirties atkarībā no autoskolas, filiāles un instruktora.
+    Braukšanas nodarbību skaits norādīts kā minimālais — reālais skaits var būt lielāks atkarībā no apmācāmā prasmēm.
+  </div>
+  <div class="source-list">
+    Datu avoti: <a href="https://www.csdd.lv" target="_blank">CSDD</a> ·
+    <a href="https://presto.lv" target="_blank">Presto</a> ·
+    <a href="https://credoautoprieks.lv" target="_blank">Credo Autoprieks</a> ·
+    <a href="https://dbs.lv" target="_blank">DBS</a> ·
+    <a href="https://akategorija.com" target="_blank">AkategorijaLV</a> ·
+    <a href="https://buts.lv" target="_blank">BUTS</a> ·
+    <a href="https://www.fortuna.lv" target="_blank">Fortūna</a>
+  </div>
+</div>
+
+<script>
+const schools = {
+  A: [
+    { name: 'AkategorijaLV', detail: '100% moto specializācija, Rīga', url: 'https://akategorija.com', color: '#C0392B', initials: 'A kat' },
+    { name: 'DBS Autoskola', detail: 'Drošas Braukšanas Skola, A kat. no €115', url: 'https://dbs.lv', color: '#2C3E50', initials: 'DBS' },
+    { name: 'Presto', detail: 'Lielākais filiāļu tīkls Latvijā', url: 'https://presto.lv', color: '#1B4D3E', initials: 'P' }
+  ],
+  B: [
+    { name: 'Presto', detail: '76% CSDD eksāmena nokārtošana, 50+ filiāles', url: 'https://presto.lv', color: '#1B4D3E', initials: 'P' },
+    { name: 'Credo Autoprieks', detail: 'Lielākā autoskola Latvijā, teorija no €69', url: 'https://credoautoprieks.lv', color: '#D4A017', initials: 'CA' },
+    { name: 'DBS Autoskola', detail: 'Drošas Braukšanas Skola, individuāla pieeja', url: 'https://dbs.lv', color: '#2C3E50', initials: 'DBS' }
+  ],
+  C: [
+    { name: 'Credo Autoprieks', detail: 'C kat. teorija no €69, filiāles visā Latvijā', url: 'https://credoautoprieks.lv', color: '#D4A017', initials: 'CA' },
+    { name: 'BUTS', detail: 'C + 95.kods vienā kursā, Aizkraukle', url: 'https://buts.lv', color: '#E74C3C', initials: 'BUTS' },
+    { name: 'Presto', detail: 'C, C1, CE kategorijas, tālmācība pieejama', url: 'https://presto.lv', color: '#1B4D3E', initials: 'P' }
+  ],
+  D: [
+    { name: 'Credo Autoprieks', detail: 'D kat. apmācība, Rīga, Jelgava, Liepāja', url: 'https://credoautoprieks.lv', color: '#D4A017', initials: 'CA' },
+    { name: 'BUTS', detail: 'D + 95.kods apmācība, reģionālās filiāles', url: 'https://buts.lv', color: '#E74C3C', initials: 'BUTS' },
+    { name: 'Presto', detail: 'D, D1, DE kategorijas visā Latvijā', url: 'https://presto.lv', color: '#1B4D3E', initials: 'P' }
+  ]
+};
+
+function updateSchools(cat) {
+  const grid = document.getElementById('schools-grid');
+  const list = schools[cat];
+  grid.innerHTML = list.map((s, i) => `
+    <a class="school-card" href="${s.url}" target="_blank" rel="noopener">
+      <span class="school-rank">${i + 1}</span>
+      <div class="school-logo" style="background:${s.color}">${s.initials}</div>
+      <div class="school-name">${s.name}</div>
+      <div class="school-detail">${s.detail}</div>
+      <div class="school-link-hint">Atvērt mājas lapu →</div>
+    </a>
+  `).join('');
+}
+
+const data = {
+  A: { theoryPrice: 50, theoryNote: '15 teorijas stundas (3 moduļi pa 5 stundām) + CSDD reģistrācija.', lessonPrice: 25, minLessons: 20, maxLessons: 40, drivingNote: 'Cena no €25/st. Minimums — 20 akadēmiskās stundas (10 nodarbības pa 2 ak.st.).', firstAid: 55, medical: 40, csddDriving: 42.69, csddDrivingDesc: 'A kategorija', perLessonLabel: '1 nodarbība = 2 akadēmiskās stundas' },
+  B: { theoryPrice: 30, theoryNote: '55 teorijas stundas (11 moduļi — 8 e-mācība + 3 klātienē) + reģistrācija autoskolā.', lessonPrice: 40, minLessons: 20, maxLessons: 50, drivingNote: 'Cena no €30 līdz €64/nodarbību atkarībā no instruktora. Vidēji ~€40. Minimums — 10 nodarbības (20 ak.st.).', firstAid: 55, medical: 40, csddDriving: 50.57, csddDrivingDesc: 'B kategorija', perLessonLabel: '1 nodarbība = 2 akadēmiskās stundas' },
+  C: { theoryPrice: 70, theoryNote: '50 teorijas stundas (10 moduļi) + Kods 95 + CSDD reģistrācija. Prasa B kategorijas apliecību.', lessonPrice: 31, minLessons: 20, maxLessons: 50, drivingNote: 'Cena no €31/st. Minimums — 20 akadēmiskās stundas. Ietver braukšanu ar kravas auto.', firstAid: 55, medical: 40, csddDriving: 44.21, csddDrivingDesc: 'C kategorija (ar savu auto)', perLessonLabel: '1 akadēmiskā stunda = 45 min' },
+  D: { theoryPrice: 70, theoryNote: '30 teorijas stundas (6 moduļi) + CSDD reģistrācija. Prasa B vai C kategorijas apliecību.', lessonPrice: 39, minLessons: 12, maxLessons: 40, drivingNote: 'Cena no €39/st. Minimums — 12 akadēmiskās stundas. Braukšana ar autobusu.', firstAid: 55, medical: 40, csddDriving: 44.21, csddDrivingDesc: 'D kategorija', perLessonLabel: '1 akadēmiskā stunda = 45 min' }
+};
+
+let currentCat = 'A';
+let lessonCount = 20;
+let options = { firstaid: true, medical: true, 'csdd-theory': true, 'csdd-driving': true, 'csdd-license': true };
+
+function selectCategory(cat) {
+  currentCat = cat;
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.cat-btn[data-cat="${cat}"]`).classList.add('active');
+  updateSchools(cat);
+  const d = data[cat];
+  document.getElementById('theory-price').textContent = `€${d.theoryPrice}`;
+  document.getElementById('theory-note').textContent = d.theoryNote;
+  document.getElementById('per-lesson-price').textContent = `€${d.lessonPrice}`;
+  document.getElementById('driving-note').textContent = d.drivingNote;
+  document.getElementById('firstaid-price').textContent = `€${d.firstAid}`;
+  document.getElementById('medical-price').textContent = `€${d.medical}`;
+  document.getElementById('csdd-driving-price').textContent = `€${d.csddDriving.toFixed(2)}`;
+  document.getElementById('csdd-driving-desc').textContent = d.csddDrivingDesc;
+  document.getElementById('min-badge').textContent = `min. ${d.minLessons}`;
+  const slider = document.getElementById('lesson-slider');
+  slider.min = d.minLessons; slider.max = d.maxLessons;
+  if (parseInt(slider.value) < d.minLessons) slider.value = d.minLessons;
+  if (parseInt(slider.value) > d.maxLessons) slider.value = d.maxLessons;
+  lessonCount = parseInt(slider.value);
+  updateDriving();
+}
+
+function updateDriving() {
+  const slider = document.getElementById('lesson-slider');
+  lessonCount = parseInt(slider.value);
+  const d = data[currentCat];
+  const progress = ((lessonCount - d.minLessons) / (d.maxLessons - d.minLessons)) * 100;
+  slider.style.setProperty('--progress', progress + '%');
+  const totalDriving = lessonCount * d.lessonPrice;
+  document.getElementById('lesson-count-display').innerHTML = `${lessonCount} <span>nodarbības</span>`;
+  document.getElementById('driving-total-price').textContent = `€${totalDriving}`;
+  calculateTotal();
+}
+
+function toggleCheck(el, key) {
+  el.classList.toggle('checked');
+  options[key] = el.classList.contains('checked');
+  calculateTotal();
+}
+
+function calculateTotal() {
+  const d = data[currentCat];
+  let total = 0;
+  const parts = [];
+  total += d.theoryPrice;
+  parts.push({ label: 'Teorija + Reģ.', amt: d.theoryPrice });
+  const drivingCost = lessonCount * d.lessonPrice;
+  total += drivingCost;
+  parts.push({ label: `Braukšana (${lessonCount}x)`, amt: drivingCost });
+  if (options.firstaid) { total += d.firstAid; parts.push({ label: 'Pirmā palīdzība', amt: d.firstAid }); }
+  if (options.medical) { total += d.medical; parts.push({ label: 'Med. komisija', amt: d.medical }); }
+  let csddTotal = 0;
+  if (options['csdd-theory']) csddTotal += 11.40;
+  if (options['csdd-driving']) csddTotal += d.csddDriving;
+  if (options['csdd-license']) csddTotal += 22.41;
+  if (csddTotal > 0) { total += csddTotal; parts.push({ label: 'CSDD eksāmeni', amt: csddTotal }); }
+  const whole = Math.floor(total);
+  const cents = Math.round((total - whole) * 100).toString().padStart(2, '0');
+  document.getElementById('total-amount').innerHTML = `€${whole}<sup>.${cents}</sup>`;
+  const breakdownEl = document.getElementById('breakdown');
+  breakdownEl.innerHTML = parts.map(p => `
+    <div class="breakdown-item">
+      <span>${p.label}</span>
+      <span class="amt">€${p.amt.toFixed(2)}</span>
+    </div>
+  `).join('');
+}
+
+selectCategory('A');
+</script>
+</body>
+</html>
