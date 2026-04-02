@@ -151,11 +151,11 @@
 
 <div class="admin-container">
   <div class="tab-bar" id="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('A', this)">\ud83c\udfcd\ufe0f A kategorija</button>
-    <button class="tab-btn" onclick="switchTab('B', this)">\ud83d\ude97 B kategorija</button>
-    <button class="tab-btn" onclick="switchTab('C', this)">\ud83d\ude9b C kategorija</button>
-    <button class="tab-btn" onclick="switchTab('D', this)">\ud83d\ude8c D kategorija</button>
-    <button class="tab-btn sub-tab" onclick="switchTab('subscribers', this)">\ud83d\udce7 Subscribers</button>
+    <button class="tab-btn active" onclick="switchTab('A', this)">A kategorija</button>
+    <button class="tab-btn" onclick="switchTab('B', this)">B kategorija</button>
+    <button class="tab-btn" onclick="switchTab('C', this)">C kategorija</button>
+    <button class="tab-btn" onclick="switchTab('D', this)">D kategorija</button>
+    <button class="tab-btn sub-tab" onclick="switchTab('subscribers', this)">Subscribers</button>
   </div>
 
   <div id="editor-area"></div>
@@ -311,7 +311,7 @@ function renderEditor() {
 function renderSubscribers() {
   var area = document.getElementById('editor-area');
   var html = '<div class="editor-card">' +
-    '<h3><span>\ud83d\udce7 Subscriber saraksts <span class="sub-count">' + subscribersList.length + '</span></span></h3>';
+    '<h3><span>Subscriber saraksts <span class="sub-count">' + subscribersList.length + '</span></span></h3>';
   if (subscribersList.length === 0) {
     html += '<div class="sub-empty">Pagaid\u0101m nav neviena subscriber.</div>';
   } else {
