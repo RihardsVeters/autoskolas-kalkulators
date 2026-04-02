@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Autoskolu Cenas | Autoskolas Kalkulators</title>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-D33V6JW5DG"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-D33V6JW5DG');
+</script>
+<style>
+  :root {
+    --bg: #F5F0E8;
+    --card: #FFFFFF;
+    --accent: #1B4D3E;
+    --accent-light: #2A7A5E;
+    --highlight: #E8A838;
+    --text: #1A1A1A;
+    --text-secondary: #5A5A5A;
+    --border: #D4CFC5;
+    --radius: 14px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg); color: var(--text);
+    min-height: 100vh; padding: 24px 16px 80px;
+  }
+  .container { max-width: 800px; margin: 0 auto; }
+  h1 { color: var(--accent); font-size: 1.6rem; margin-bottom: 4px; text-align: center; }
+  .subtitle { text-align: center; color: var(--text-secondary); font-size: 0.88rem; margin-bottom: 6px; }
+  .back-link {
+    display: block; text-align: center; margin-bottom: 22px;
+    color: var(--accent); font-size: 0.85rem; text-decoration: none;
+  }
+  .back-link:hover { text-decoration: underline; }
+  .updated-info {
+    text-align: center; font-size: 0.75rem; color: var(--text-secondary);
+    margin-bottom: 20px; font-style: italic;
+  }
+
+  .cat-tabs {
+    display: flex; gap: 8px; justify-content: center;
+    margin-bottom: 24px; flex-wrap: wrap;
+  }
+  .cat-tab {
+    padding: 10px 22px; border-radius: 10px; border: 2px solid var(--border);
+    background: var(--card); cursor: pointer; font-weight: 600;
+    font-size: 0.92rem; transition: all 0.2s; font-family: inherit;
+    color: var(--text);
+  }
+  .cat-tab.active {
+    background: var(--accent); color: white; border-color: var(--accent);
+  }
+  .cat-tab:hover:not(.active) { border-color: var(--accent); }
+
+  .school-card {
+    background: var(--card); border-radius: var(--radius);
+    padding: 20px; margin-bottom: 16px;
+    box-shadow: 0 2px 16px rgba(27,77,62,0.07);
+    border: 1px solid rgba(0,0,0,0.04);
+  }
+  .school-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 14px;
+  }
+  .school-name { font-size: 1.1rem; font-weight: 700; color: var(--accent); }
+  .school-website {
+    font-size: 0.75rem; color: var(--accent-light);
+    text-decoration: none; padding: 4px 10px;
+    border: 1px solid var(--accent-light); border-radius: 6px;
+  }
+  .school-website:hover { background: var(--accent-light); color: white; }
+
+  .price-grid {
+    display: grid; grid-template-columns: 1fr auto;
+    gap: 6px 12px; font-size: 0.88rem;
+  }
+  .price-label { color: var(--text-secondary); }
+  .price-value { font-weight: 700; text-align: right; color: var(--text); }
+  .price-divider {
+    grid-column: 1 / -1; height: 1px;
+    background: var(--border); margin: 4px 0;
+  }
+  .price-total .price-label { color: var(--accent); font-weight: 700; font-size: 0.95rem; }
+  .price-total .price-value { color: var(--highlight); font-size: 1.1rem; }
+
+  .no-data {
+    text-align: center; padding: 40px; color: var(--text-secondary);
+    font-style: italic;
+  }
+
+  @media (max-width: 500px) {
+    .cat-tab { padding: 8px 14px; font-size: 0.82rem; }
+    .school-header { flex-direction: column; gap: 8px; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>&#x1F3EB; Autoskolu Cenas</h1>
+  <p class="subtitle">Realaas cenas no autoskolu majaslapaam</p>
+  <a href="index.html" class="back-link">&larr; Atpakal uz kalkulatoru</a>
+  <div class="updated-info" id="updatedInfo">Ielade datus...</div>
+
+  <div class="cat-tabs" id="catTabs"></div>
+  <div id="schoolsList"></div>
+</div>
+
+<script>
+var currentCat = 'B';
+
+var defaultPrices = {
+  lastUpdated: 'Manuali ievaditas cenas',
+  schools: {
+    'AkategorijaLV': {
+      name: 'A kategorija LV',
+      website: 'https://www.akategorija.com',
+      categories: {
+        'A': {
+          teorija: 50,
+          braukšana_stunda: 25,
+          min_stundas: 10,
+          laukums_stunda: 4,
+          piez: 'Specializeta motoskola. 10 stundu uzreiz: 22.50 EUR/st.'
+        }
+      }
+    },
+    'DBS': {
+      name: 'Drosas Brauksanas Skola',
+      website: 'https://dbs.lv',
+      categories: {
+        'A': {
+          teorija: null,
+          braukšana_stunda: null,
+          min_stundas: 10,
+          piez: 'Cenas pec pieprasijuma - sazinieties ar skolu'
+        },
+        'B': {
+          teorija: 230,
+          braukšana_stunda: 55,
+          min_stundas: 20,
+          piez: 'Manuala karbas 55 EUR/90min, automats 58 EUR/90min. Citu skolu klientiem +10 EUR'
+        }
+      }
+    },
+    'Einsteins': {
+      name: 'Autoskola Einsteins',
+      website: 'https://einsteins.lv',
+      categories: {
+        'A': {
+          teorija: null,
+          braukšana_stunda: null,
+          min_stundas: 10,
+          piez: 'Cenas atkaribas no filiales - izmantojiet einsteins.lv kalkulatoru'
+        },
+        'B': {
+          teorija: null,
+          braukšana_stunda: null,
+          min_stundas: 20,
+          piez: 'Cenas atkaribas no filiales un instruktora - izmantojiet einsteins.lv kalkulatoru'
+        },
+        'C': {
+          teorija: null,
+          braukšana_stunda: null,
+          min_stundas: 20,
+          piez: 'Cenas pec pieprasijuma'
+        }
+      }
+    },
+    'Presto': {
+      name: 'Presto Autoskola',
+      website: 'https://presto.lv',
+      categories: {
+        'B': {
+          registracija: 30,
+          teorija: 25,
+          braukšana_stunda: 30,
+          braukšana_stunda_max: 64,
+          min_stundas: 10,
+          eksāmens: 45,
+          piez: 'Teorija 25 EUR (subsideta, citadi 125 EUR). Brauksana 30-64 EUR atk. no instruktora'
+        },
+        'C': {
+          teorija: null,
+          braukšana_stunda: null,
+          min_stundas: 20,
+          piez: 'Sazinieties ar Presto'
+        },
+        'D': {
+          teorija: null,
+          braukšana_stunda: null,
+          min_stundas: 12,
+          piez: 'Sazinieties ar Presto'
+        }
+      }
+    },
+    'CredoAutoprieks': {
+      name: 'Credo Autoprieks',
+      website: 'https://credoautoprieks.lv',
+      categories: {
+        'A': {
+          teorija: null,
+          braukšana_stunda: null,
+          min_stundas: 10,
+          piez: 'Sazinieties ar skolu'
+        },
+        'B': {
+          teorija: 1,
+          dokumenti: 30,
+          braukšana_stunda: 18,
+          min_stundas: 20,
+          eksāmens: 10,
+          piez: 'Teorija akcija 1 EUR (parasti 75 EUR). Brauksana 18 EUR/st (20 st = 360 EUR)'
+        },
+        'C': {
+          teorija: null,
+          braukšana_stunda: null,
+          min_stundas: 20,
+          piez: 'Sazinieties ar skolu'
+        },
+        'D': {
+          teorija: null,
+          braukšana_stunda: null,
+          min_stundas: 12,
+          piez: 'Sazinieties ar skolu'
+        }
+      }
+    },
+    'BUTS': {
+      name: 'Macibu centrs BUTS',
+      website: 'https://buts.lv',
+      categories: {
+        'B': {
+          teorija: null,
+          braukšana_stunda: null,
+          min_stundas: 20,
+          piez: 'Cenas pec pieprasijuma - sazinieties ar BUTS'
+        },
+        'C': {
+          teorija: null,
+          braukšana_stunda: null,
+          min_stundas: 20,
+          piez: 'Cenas pec pieprasijuma'
+        }
+      }
+    },
+    'Fortuna': {
+      name: 'Autoskola Fortuna',
+      website: 'https://www.fortuna.lv',
+      categories: {
+        'A': {
+          teorija: 50,
+          braukšana_stunda: 25,
+          min_stundas: 20,
+          piez: 'Pilns komplekts 50 EUR + brauksana 25 EUR/st'
+        },
+        'B': {
+          registracija: 30,
+          teorija: 0,
+          braukšana_stunda: 40,
+          min_stundas: 20,
+          eksāmens: 45,
+          teorijas_ieskaite: 15,
+          piez: 'Komplekts 30 EUR. Brauksana no 40 EUR/st. Teorijas ieskaite 15 EUR, brauksanas eksamens 45 EUR'
+        },
+        'C': {
+          teorija: 70,
+          braukšana_stunda: 31,
+          min_stundas: 20,
+          piez: 'Komplekts ar 95.kodu 70 EUR + brauksana 31 EUR/st'
+        },
+        'D': {
+          teorija: 70,
+          braukšana_stunda: 39,
+          min_stundas: 12,
+          piez: 'Komplekts 70 EUR + brauksana 39 EUR/st'
+        }
+      }
+    }
+  }
+};
+
+var prices = defaultPrices;
+
+function initTabs() {
+  var cats = ['A', 'B', 'C', 'D'];
+  var emojis = {A: '&#x1F3CD;&#xFE0F;', B: '&#x1F697;', C: '&#x1F69B;', D: '&#x1F68C;'};
+  var tabsHtml = '';
+  for (var i = 0; i < cats.length; i++) {
+    var c = cats[i];
+    var active = c === currentCat ? ' active' : '';
+    tabsHtml = tabsHtml + '<button class="cat-tab' + active + '" onclick="switchCat(\'' + c + '\')">' + emojis[c] + ' ' + c + ' kat.</button>';
+  }
+  document.getElementById('catTabs').innerHTML = tabsHtml;
+}
+
+function switchCat(cat) {
+  currentCat = cat;
+  initTabs();
+  renderSchools();
+}
+
+function renderSchools() {
+  var container = document.getElementById('schoolsList');
+  var html = '';
+  var schools = prices.schools;
+  var found = false;
+
+  var keys = Object.keys(schools);
+  for (var i = 0; i < keys.length; i++) {
+    var key = keys[i];
+    var school = schools[key];
+    if (!school.categories || !school.categories[currentCat]) continue;
+    found = true;
+
+    var catData = school.categories[currentCat];
+    html = html + '<div class="school-card">';
+    html = html + '<div class="school-header">';
+    html = html + '<span class="school-name">' + school.name + '</span>';
+    html = html + '<a href="' + school.website + '" target="_blank" class="school-website">Majaslapa &rarr;</a>';
+    html = html + '</div>';
+    html = html + '<div class="price-grid">';
+
+    var total = 0;
+    var hasTotal = false;
+
+    if (catData.registracija != null) {
+      html = html + '<span class="price-label">Registracija</span>';
+      html = html + '<span class="price-value">' + catData.registracija + ' EUR</span>';
+      total = total + catData.registracija;
+      hasTotal = true;
+    }
+
+    if (catData.teorija != null) {
+      html = html + '<span class="price-label">Teorija</span>';
+      html = html + '<span class="price-value">' + catData.teorija + ' EUR</span>';
+      total = total + catData.teorija;
+      hasTotal = true;
+    }
+
+    if (catData.dokumenti != null) {
+      html = html + '<span class="price-label">Dokumentu noformesana</span>';
+      html = html + '<span class="price-value">' + catData.dokumenti + ' EUR</span>';
+      total = total + catData.dokumenti;
+      hasTotal = true;
+    }
+
+    if (catData.braukšana_stunda != null) {
+      var brLabel = 'Brauksana (1 st.)';
+      var brVal = catData.braukšana_stunda + ' EUR';
+      if (catData.braukšana_stunda_max) {
+        brVal = catData.braukšana_stunda + ' - ' + catData.braukšana_stunda_max + ' EUR';
+      }
+      html = html + '<span class="price-label">' + brLabel + '</span>';
+      html = html + '<span class="price-value">' + brVal + '</span>';
+    }
+
+    if (catData.min_stundas) {
+      html = html + '<span class="price-label">Min. stundu skaits</span>';
+      html = html + '<span class="price-value">' + catData.min_stundas + ' st.</span>';
+    }
+
+    if (catData.braukšana_stunda != null && catData.min_stundas) {
+      var brMin = catData.braukšana_stunda * catData.min_stundas;
+      html = html + '<span class="price-label">Brauksana (min. ' + catData.min_stundas + ' st.)</span>';
+      html = html + '<span class="price-value">' + brMin + ' EUR</span>';
+      total = total + brMin;
+      hasTotal = true;
+    }
+
+    if (catData.laukums_stunda != null) {
+      html = html + '<span class="price-label">Laukuma noma (1 st.)</span>';
+      html = html + '<span class="price-value">' + catData.laukums_stunda + ' EUR</span>';
+    }
+
+    if (catData.eksāmens != null) {
+      html = html + '<span class="price-label">Skolas eksamens</span>';
+      html = html + '<span class="price-value">' + catData.eksāmens + ' EUR</span>';
+      total = total + catData.eksāmens;
+    }
+
+    if (catData.teorijas_ieskaite != null) {
+      html = html + '<span class="price-label">Teorijas ieskaite</span>';
+      html = html + '<span class="price-value">' + catData.teorijas_ieskaite + ' EUR</span>';
+      total = total + catData.teorijas_ieskaite;
+    }
+
+    if (hasTotal) {
+      html = html + '<div class="price-divider"></div>';
+      html = html + '<span class="price-label price-total"><span class="price-label">Kopa (min.)</span></span>';
+      html = html + '<span class="price-value price-total"><span class="price-value">~ ' + total + ' EUR</span></span>';
+    }
+
+    html = html + '</div>';
+
+    if (catData.piez) {
+      html = html + '<p style="margin-top:10px; font-size:0.78rem; color: var(--text-secondary); font-style: italic;">' + catData.piez + '</p>';
+    }
+
+    html = html + '</div>';
+  }
+
+  if (!found) {
+    html = '<div class="no-data">Nav datu par ' + currentCat + ' kategoriju</div>';
+  }
+
+  container.innerHTML = html;
+}
+
+function loadFromFirebase() {
+  var dbUrl = 'https://autoskolu-kalkulators-default-rtdb.europe-west1.firebasedatabase.app';
+  var url = dbUrl + '/prices.json';
+
+  var xhr = new XMLHttpRequest();
+  xhr.open('GET', url, true);
+  xhr.onreadystatechange = function() {
+    if (xhr.readyState === 4) {
+      if (xhr.status === 200 && xhr.responseText && xhr.responseText !== 'null') {
+        try {
+          var data = JSON.parse(xhr.responseText);
+          if (data && data.schools) {
+            prices = data;
+            if (data.lastUpdated) {
+              document.getElementById('updatedInfo').textContent = 'Pedejo reizi atjauninats: ' + data.lastUpdated;
+            }
+          }
+        } catch(e) {
+          document.getElementById('updatedInfo').textContent = 'Izmanto noklusetas cenas';
+        }
+      } else {
+        document.getElementById('updatedInfo').textContent = 'Izmanto noklusetas cenas (Firebase nav datu)';
+      }
+      renderSchools();
+    }
+  };
+  xhr.send();
+}
+
+initTabs();
+loadFromFirebase();
+</script>
+</body>
+</html>
