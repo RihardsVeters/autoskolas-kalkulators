@@ -1,0 +1,29 @@
+name: Scrape Autoskola Prices
+
+on:
+  schedule:
+    - cron: '0 */1 * * *'  # Ik stundu
+  workflow_dispatch:  # Manualais palaidisana
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: |
+          cd scraper
+          npm install
+
+      - name: Run price scraper
+        env:
+          FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
+        run: |
+          cd scraper
+          node scrape-prices.js
