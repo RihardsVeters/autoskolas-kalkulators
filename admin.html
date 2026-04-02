@@ -77,7 +77,7 @@
     background: var(--card); border-radius: var(--radius); padding: 20px;
     margin-bottom: 14px; box-shadow: var(--shadow);
   }
-  .editor-card h3 { font-size: 0.95rem; color: var(--accent); margin-bottom: 12px; }
+  .editor-card h3 { font-size: 0.95rem; color: var(--accent); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
   .field-group { margin-bottom: 10px; }
   .field-group label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
   .field-group input {
@@ -92,12 +92,25 @@
     font-weight: 900; font-size: 0.6rem; color: white; margin-top: 6px;
   }
   .logo-preview img { width: 100%; height: 100%; object-fit: contain; }
+  .btn-row { display: flex; gap: 8px; margin-top: 16px; }
   .save-btn {
-    width: 100%; padding: 14px; background: var(--accent); color: white;
+    flex: 1; padding: 14px; background: var(--accent); color: white;
     border: none; border-radius: 10px; font-size: 1rem; font-weight: 700;
-    cursor: pointer; margin-top: 10px; font-family: inherit;
+    cursor: pointer; font-family: inherit;
   }
   .save-btn:hover { background: var(--accent-light); }
+  .add-btn {
+    padding: 10px 16px; background: var(--highlight); color: var(--accent);
+    border: none; border-radius: 10px; font-size: 0.85rem; font-weight: 700;
+    cursor: pointer; font-family: inherit;
+  }
+  .add-btn:hover { opacity: 0.9; }
+  .remove-btn {
+    background: none; border: 1px solid var(--danger); color: var(--danger);
+    padding: 4px 10px; border-radius: 6px; font-size: 0.72rem; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+  }
+  .remove-btn:hover { background: var(--danger); color: white; }
   .save-msg { text-align: center; color: var(--accent); font-weight: 600; font-size: 0.9rem; margin-top: 10px; min-height: 24px; }
   .back-link {
     display: block; text-align: center; margin-top: 20px;
@@ -138,26 +151,28 @@
 
 <div class="admin-container">
   <div class="tab-bar" id="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('A', this)">🏍️ A kategorija</button>
-    <button class="tab-btn" onclick="switchTab('B', this)">🚗 B kategorija</button>
-    <button class="tab-btn" onclick="switchTab('C', this)">🚛 C kategorija</button>
-    <button class="tab-btn" onclick="switchTab('D', this)">🚌 D kategorija</button>
-    <button class="tab-btn sub-tab" onclick="switchTab('subscribers', this)">📧 Subscribers</button>
+    <button class="tab-btn active" onclick="switchTab('A', this)">\ud83c\udfcd\ufe0f A kategorija</button>
+    <button class="tab-btn" onclick="switchTab('B', this)">\ud83d\ude97 B kategorija</button>
+    <button class="tab-btn" onclick="switchTab('C', this)">\ud83d\ude9b C kategorija</button>
+    <button class="tab-btn" onclick="switchTab('D', this)">\ud83d\ude8c D kategorija</button>
+    <button class="tab-btn sub-tab" onclick="switchTab('subscribers', this)">\ud83d\udce7 Subscribers</button>
   </div>
 
   <div id="editor-area"></div>
 
-  <button class="save-btn" id="save-btn" onclick="saveAll()">Saglabāt izmaiņas</button>
+  <div class="btn-row" id="btn-row">
+    <button class="save-btn" id="save-btn" onclick="saveAll()">Saglab\u0101t izmai\u0146as</button>
+    <button class="add-btn" id="add-btn" onclick="addSchool()">+ Pievienot skolu</button>
+  </div>
   <div class="save-msg" id="save-msg"></div>
 
-  <a href="index.html" class="back-link">← Atpakaļ uz kalkulatoru</a>
+  <a href="index.html" class="back-link">\u2190 Atpaka\u013c uz kalkulatoru</a>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"><\/script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"><\/script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"><\/script>
 <script>
-// REPLACE WITH YOUR FIREBASE CONFIG
 var firebaseConfig = {
   apiKey: "AIzaSyBHj70dt8vxMe2K9MIn6MLCr3cMWP3mrLk",
   authDomain: "autoskolu-kalkulators.firebaseapp.com",
@@ -171,24 +186,24 @@ var auth = firebase.auth();
 
 var defaultSchools = {
   A: [
-    { name: 'AkategorijaLV', detail: '100% moto specializācija, Rīga', url: 'https://akategorija.com', color: '#C0392B', initials: 'A kat', logoUrl: '' },
-    { name: 'DBS Autoskola', detail: 'Drošas Braukšanas Skola, A kat. no \u20AC115', url: 'https://dbs.lv', color: '#2C3E50', initials: 'DBS', logoUrl: '' },
-    { name: 'Presto', detail: 'Lielākais filiāļu tīkls Latvijā', url: 'https://presto.lv', color: '#1B4D3E', initials: 'P', logoUrl: '' }
+    { name: 'AkategorijaLV', detail: '100% moto specializ\u0101cija, R\u012bga', url: 'https://akategorija.com', color: '#C0392B', initials: 'A kat', logoUrl: '' },
+    { name: 'DBS Autoskola', detail: 'Dro\u0161as Brauk\u0161anas Skola, A kat. no \u20ac115', url: 'https://dbs.lv', color: '#2C3E50', initials: 'DBS', logoUrl: '' },
+    { name: 'Ein\u0161teins', detail: 'Liel\u0101k\u0101 autoskola Latvij\u0101, 30000+ audz\u0113k\u0146u', url: 'https://einsteins.lv', color: '#E67E22', initials: 'E', logoUrl: '' }
   ],
   B: [
-    { name: 'Presto', detail: '76% CSDD eksāmena nokārtošana, 50+ filiāles', url: 'https://presto.lv', color: '#1B4D3E', initials: 'P', logoUrl: '' },
-    { name: 'Credo Autoprieks', detail: 'Lielākā autoskola Latvijā, teorija no \u20AC69', url: 'https://credoautoprieks.lv', color: '#D4A017', initials: 'CA', logoUrl: '' },
-    { name: 'DBS Autoskola', detail: 'Drošas Braukšanas Skola, individuāla pieeja', url: 'https://dbs.lv', color: '#2C3E50', initials: 'DBS', logoUrl: '' }
+    { name: 'Ein\u0161teins', detail: 'Piepras\u012bt\u0101k\u0101 autoskola Latvij\u0101', url: 'https://einsteins.lv', color: '#E67E22', initials: 'E', logoUrl: '' },
+    { name: 'Presto', detail: '76% CSDD nok\u0101rto\u0161ana, 50+ fili\u0101les', url: 'https://presto.lv', color: '#1B4D3E', initials: 'P', logoUrl: '' },
+    { name: 'Credo Autoprieks', detail: '15+ gadu pieredze, 19 fili\u0101les', url: 'https://credoautoprieks.lv', color: '#D4A017', initials: 'CA', logoUrl: '' }
   ],
   C: [
-    { name: 'Credo Autoprieks', detail: 'C kat. teorija no \u20AC69, filiāles visā Latvijā', url: 'https://credoautoprieks.lv', color: '#D4A017', initials: 'CA', logoUrl: '' },
-    { name: 'BUTS', detail: 'C + 95.kods vienā kursā, Aizkraukle', url: 'https://buts.lv', color: '#E74C3C', initials: 'BUTS', logoUrl: '' },
-    { name: 'Presto', detail: 'C, C1, CE kategorijas, tālmācība pieejama', url: 'https://presto.lv', color: '#1B4D3E', initials: 'P', logoUrl: '' }
+    { name: 'Ein\u0161teins', detail: 'C, CE kategorijas, online un kl\u0101tien\u0113', url: 'https://einsteins.lv', color: '#E67E22', initials: 'E', logoUrl: '' },
+    { name: 'BUTS', detail: 'C + 95.kods vien\u0101 kurs\u0101', url: 'https://buts.lv', color: '#E74C3C', initials: 'BUTS', logoUrl: '' },
+    { name: 'Fort\u016bna', detail: '14 fili\u0101les, C, CE, C1 kat.', url: 'https://www.fortuna.lv', color: '#8E44AD', initials: 'F', logoUrl: '' }
   ],
   D: [
-    { name: 'Credo Autoprieks', detail: 'D kat. apmācība, Rīga, Jelgava, Liepāja', url: 'https://credoautoprieks.lv', color: '#D4A017', initials: 'CA', logoUrl: '' },
-    { name: 'BUTS', detail: 'D + 95.kods apmācība, reģionālās filiāles', url: 'https://buts.lv', color: '#E74C3C', initials: 'BUTS', logoUrl: '' },
-    { name: 'Presto', detail: 'D, D1, DE kategorijas visā Latvijā', url: 'https://presto.lv', color: '#1B4D3E', initials: 'P', logoUrl: '' }
+    { name: 'Credo Autoprieks', detail: 'D kat. no \u20ac69, vair\u0101kas pils\u0113tas', url: 'https://credoautoprieks.lv', color: '#D4A017', initials: 'CA', logoUrl: '' },
+    { name: 'Fort\u016bna', detail: 'D, D1, DE kat., 14 fili\u0101les', url: 'https://www.fortuna.lv', color: '#8E44AD', initials: 'F', logoUrl: '' },
+    { name: 'Presto', detail: 'D, D1, DE kategorijas vis\u0101 Latvij\u0101', url: 'https://presto.lv', color: '#1B4D3E', initials: 'P', logoUrl: '' }
   ]
 };
 
@@ -221,12 +236,14 @@ function loadData() {
   db.ref('schools').on('value', function(snapshot) {
     var fbData = snapshot.val();
     if (fbData) {
-      schoolsData = fbData;
+      ['A', 'B', 'C', 'D'].forEach(function(cat) {
+        if (fbData[cat]) { schoolsData[cat] = fbData[cat]; }
+      });
     } else {
       schoolsData = JSON.parse(JSON.stringify(defaultSchools));
       db.ref('schools').set(schoolsData);
     }
-    renderEditor();
+    if (currentTab !== 'subscribers') renderEditor();
   });
 
   db.ref('subscribers').on('value', function(snapshot) {
@@ -245,14 +262,18 @@ function loadData() {
 }
 
 function switchTab(tab, btn) {
+  // IMPORTANT: save current tab inputs BEFORE switching
+  if (currentTab !== 'subscribers') {
+    collectCurrentTabData();
+  }
   currentTab = tab;
   document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
   btn.classList.add('active');
   if (tab === 'subscribers') {
-    document.getElementById('save-btn').style.display = 'none';
+    document.getElementById('btn-row').style.display = 'none';
     renderSubscribers();
   } else {
-    document.getElementById('save-btn').style.display = '';
+    document.getElementById('btn-row').style.display = '';
     renderEditor();
   }
   document.getElementById('save-msg').textContent = '';
@@ -264,32 +285,35 @@ function renderEditor() {
   var list = schoolsData[currentTab] || [];
   var html = '';
   list.forEach(function(s, i) {
-    var previewBg = 'background:' + s.color + ';';
-    var previewContent = s.logoUrl
+    var previewBg = 'background:' + (s.color || '#1B4D3E') + ';';
+    var previewContent = (s.logoUrl && s.logoUrl.length > 0)
       ? '<img src="' + s.logoUrl + '" style="width:100%;height:100%;object-fit:contain;">'
-      : s.initials;
+      : (s.initials || s.name.charAt(0));
     html += '<div class="editor-card">' +
-      '<h3>#' + (i + 1) + ' ' + s.name + '</h3>' +
-      '<div class="field-group"><label>Nosaukums</label><input data-cat="' + currentTab + '" data-idx="' + i + '" data-field="name" value="' + (s.name || '') + '"></div>' +
-      '<div class="field-group"><label>Apraksts</label><input data-cat="' + currentTab + '" data-idx="' + i + '" data-field="detail" value="' + (s.detail || '') + '"></div>' +
-      '<div class="field-group"><label>URL</label><input data-cat="' + currentTab + '" data-idx="' + i + '" data-field="url" value="' + (s.url || '') + '"></div>' +
-      '<div class="field-group"><label>Logo URL (tukšs = rāda iniciāļus)</label><input data-cat="' + currentTab + '" data-idx="' + i + '" data-field="logoUrl" value="' + (s.logoUrl || '') + '" oninput="updateLogoPreview(' + i + ', this.value)"></div>' +
+      '<h3><span>#' + (i + 1) + ' ' + s.name + '</span><button class="remove-btn" onclick="removeSchool(' + i + ')">Dz\u0113st</button></h3>' +
+      '<div class="field-group"><label>Nosaukums</label><input data-idx="' + i + '" data-field="name" value="' + (s.name || '').replace(/"/g, '&quot;') + '"></div>' +
+      '<div class="field-group"><label>Apraksts</label><input data-idx="' + i + '" data-field="detail" value="' + (s.detail || '').replace(/"/g, '&quot;') + '"></div>' +
+      '<div class="field-group"><label>URL</label><input data-idx="' + i + '" data-field="url" value="' + (s.url || '').replace(/"/g, '&quot;') + '"></div>' +
+      '<div class="field-group"><label>Logo URL (tuk\u0161s = r\u0101da inici\u0101\u013cus)</label><input data-idx="' + i + '" data-field="logoUrl" value="' + (s.logoUrl || '').replace(/"/g, '&quot;') + '" oninput="updateLogoPreview(' + i + ', this.value)"></div>' +
       '<div class="field-row">' +
-        '<div class="field-group"><label>Krāsa</label><input type="color" data-cat="' + currentTab + '" data-idx="' + i + '" data-field="color" value="' + (s.color || '#1B4D3E') + '"></div>' +
-        '<div class="field-group"><label>Iniciāļi</label><input data-cat="' + currentTab + '" data-idx="' + i + '" data-field="initials" value="' + (s.initials || '') + '"></div>' +
+        '<div class="field-group"><label>Kr\u0101sa</label><input type="color" data-idx="' + i + '" data-field="color" value="' + (s.color || '#1B4D3E') + '"></div>' +
+        '<div class="field-group"><label>Inici\u0101\u013ci</label><input data-idx="' + i + '" data-field="initials" value="' + (s.initials || '').replace(/"/g, '&quot;') + '"></div>' +
       '</div>' +
-      '<div class="field-group"><label>Priekšskatījums</label><div class="logo-preview" id="preview-' + i + '" style="' + previewBg + '">' + previewContent + '</div></div>' +
+      '<div class="field-group"><label>Priek\u0161skat\u012bjums</label><div class="logo-preview" id="preview-' + i + '" style="' + previewBg + '">' + previewContent + '</div></div>' +
     '</div>';
   });
+  if (list.length === 0) {
+    html = '<div class="editor-card"><p style="color:var(--text-secondary);font-style:italic;">Nav autoskolu \u0161ai kategorijai. Nospied \u201c+ Pievienot skolu\u201d.</p></div>';
+  }
   area.innerHTML = html;
 }
 
 function renderSubscribers() {
   var area = document.getElementById('editor-area');
   var html = '<div class="editor-card">' +
-    '<h3>\uD83D\uDCE7 Subscriber saraksts <span class="sub-count">' + subscribersList.length + '</span></h3>';
+    '<h3><span>\ud83d\udce7 Subscriber saraksts <span class="sub-count">' + subscribersList.length + '</span></span></h3>';
   if (subscribersList.length === 0) {
-    html += '<div class="sub-empty">Pagaidām nav neviena subscriber.</div>';
+    html += '<div class="sub-empty">Pagaid\u0101m nav neviena subscriber.</div>';
   } else {
     html += '<ul class="sub-list">';
     subscribersList.forEach(function(sub) {
@@ -316,30 +340,59 @@ function updateLogoPreview(idx, url) {
   }
 }
 
-function collectCurrentData() {
-  document.querySelectorAll('input[data-cat][data-idx][data-field]').forEach(function(input) {
-    var cat = input.getAttribute('data-cat');
+function collectCurrentTabData() {
+  if (currentTab === 'subscribers') return;
+  var inputs = document.querySelectorAll('input[data-idx][data-field]');
+  inputs.forEach(function(input) {
     var idx = parseInt(input.getAttribute('data-idx'));
     var field = input.getAttribute('data-field');
-    if (schoolsData[cat] && schoolsData[cat][idx]) {
-      schoolsData[cat][idx][field] = input.value;
+    if (schoolsData[currentTab] && schoolsData[currentTab][idx]) {
+      schoolsData[currentTab][idx][field] = input.value;
     }
   });
 }
 
+function addSchool() {
+  if (currentTab === 'subscribers') return;
+  collectCurrentTabData();
+  if (!schoolsData[currentTab]) schoolsData[currentTab] = [];
+  schoolsData[currentTab].push({
+    name: 'Jauna autoskola',
+    detail: 'Apraksts',
+    url: 'https://',
+    color: '#1B4D3E',
+    initials: '?',
+    logoUrl: ''
+  });
+  renderEditor();
+  window.scrollTo(0, document.body.scrollHeight);
+}
+
+function removeSchool(idx) {
+  if (currentTab === 'subscribers') return;
+  collectCurrentTabData();
+  if (schoolsData[currentTab] && schoolsData[currentTab][idx] !== undefined) {
+    var name = schoolsData[currentTab][idx].name;
+    if (confirm('Vai tie\u0161\u0101m dz\u0113st "' + name + '"?')) {
+      schoolsData[currentTab].splice(idx, 1);
+      renderEditor();
+    }
+  }
+}
+
 function saveAll() {
-  collectCurrentData();
+  collectCurrentTabData();
   db.ref('schools').set(schoolsData).then(function() {
-    document.getElementById('save-msg').textContent = 'Izmaiņas saglabātas!';
+    document.getElementById('save-msg').textContent = 'Izmai\u0146as saglab\u0101tas!';
     setTimeout(function() { document.getElementById('save-msg').textContent = ''; }, 3000);
   }).catch(function(err) {
-    document.getElementById('save-msg').textContent = 'Kļūda: ' + err.message;
+    document.getElementById('save-msg').textContent = 'K\u013c\u016bda: ' + err.message;
   });
 }
 
 document.getElementById('login-pass').addEventListener('keypress', function(e) {
   if (e.key === 'Enter') doLogin();
 });
-</script>
+<\/script>
 </body>
 </html>
