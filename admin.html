@@ -144,6 +144,16 @@
     border: 1px solid var(--border);
   }
   .price-school-card h4 { font-size: 0.88rem; color: var(--accent); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+  .profile-card {
+    background: #FAFAF7; border-radius: 10px; padding: 14px; margin-bottom: 10px;
+    border: 1px solid var(--border);
+  }
+  .profile-card h4 { font-size: 0.88rem; color: var(--accent); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+  .profile-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .csdd-section-admin { margin-top: 10px; padding: 10px; background: #F0F7F4; border-radius: 8px; border: 1px solid #D0E6DA; }
+  .csdd-section-admin h5 { font-size: 0.75rem; color: var(--accent); font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .csdd-row { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; margin-bottom: 6px; }
+  .csdd-row-label { font-size: 0.7rem; font-weight: 600; color: var(--text-secondary); grid-column: 1 / -1; margin-top: 4px; }
 </style>
 </head>
 <body>
@@ -166,11 +176,8 @@
 
 <div class="admin-container">
   <div class="tab-bar" id="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('A', this)">&#x1F3CD;&#xFE0F; A kat.</button>
-    <button class="tab-btn" onclick="switchTab('B', this)">&#x1F697; B kat.</button>
-    <button class="tab-btn" onclick="switchTab('C', this)">&#x1F69B; C kat.</button>
-    <button class="tab-btn" onclick="switchTab('D', this)">&#x1F68C; D kat.</button>
-    <button class="tab-btn sub-tab" onclick="switchTab('prices', this)">&#x1F4B0; Cenas</button>
+    <button class="tab-btn active" onclick="switchTab('profiles', this)">&#x1F3EB; Profili</button>
+    <button class="tab-btn" onclick="switchTab('prices', this)">&#x1F4B0; Cenas</button>
     <button class="tab-btn sub-tab" onclick="switchTab('subscribers', this)">&#x1F4E7; Subscribers</button>
   </div>
 
@@ -187,31 +194,7 @@
 
 <!-- SCRIPT BLOCK 1: UI functions -->
 <script>
-var defaultSchools = {
-  A: [
-    { name: 'AkategorijaLV', detail: '100% moto specializ\u0101cija, R\u012bga', url: 'https://akategorija.com', color: '#C0392B', initials: 'A kat', logoUrl: '' },
-    { name: 'DBS Autoskola', detail: 'Dro\u0161as Brauk\u0161anas Skola, A kat. no \u20ac115', url: 'https://dbs.lv', color: '#2C3E50', initials: 'DBS', logoUrl: '' },
-    { name: 'Ein\u0161teins', detail: 'Liel\u0101k\u0101 autoskola Latvij\u0101, 30000+ audz\u0113k\u0146u', url: 'https://einsteins.lv', color: '#E67E22', initials: 'E', logoUrl: '' }
-  ],
-  B: [
-    { name: 'Ein\u0161teins', detail: 'Piepras\u012bt\u0101k\u0101 autoskola Latvij\u0101', url: 'https://einsteins.lv', color: '#E67E22', initials: 'E', logoUrl: '' },
-    { name: 'Presto', detail: '76% CSDD nok\u0101rto\u0161ana, 50+ fili\u0101les', url: 'https://presto.lv', color: '#1B4D3E', initials: 'P', logoUrl: '' },
-    { name: 'Credo Autoprieks', detail: '15+ gadu pieredze, 19 fili\u0101les', url: 'https://credoautoprieks.lv', color: '#D4A017', initials: 'CA', logoUrl: '' }
-  ],
-  C: [
-    { name: 'Ein\u0161teins', detail: 'C, CE kategorijas, online un kl\u0101tien\u0113', url: 'https://einsteins.lv', color: '#E67E22', initials: 'E', logoUrl: '' },
-    { name: 'BUTS', detail: 'C + 95.kods vien\u0101 kurs\u0101', url: 'https://buts.lv', color: '#E74C3C', initials: 'BUTS', logoUrl: '' },
-    { name: 'Fort\u016bna', detail: '14 fili\u0101les, C, CE, C1 kat.', url: 'https://www.fortuna.lv', color: '#8E44AD', initials: 'F', logoUrl: '' }
-  ],
-  D: [
-    { name: 'Credo Autoprieks', detail: 'D kat. no \u20ac69, vair\u0101kas pils\u0113tas', url: 'https://credoautoprieks.lv', color: '#D4A017', initials: 'CA', logoUrl: '' },
-    { name: 'Fort\u016bna', detail: 'D, D1, DE kat., 14 fili\u0101les', url: 'https://www.fortuna.lv', color: '#8E44AD', initials: 'F', logoUrl: '' },
-    { name: 'Presto', detail: 'D, D1, DE kategorijas vis\u0101 Latvij\u0101', url: 'https://presto.lv', color: '#1B4D3E', initials: 'P', logoUrl: '' }
-  ]
-};
-
-var schoolsData = JSON.parse(JSON.stringify(defaultSchools));
-var currentTab = 'A';
+var currentTab = 'profiles';
 var subscribersList = [];
 var pricesData = null;
 var priceCat = 'A';
@@ -237,9 +220,9 @@ function doLogout() {
 }
 
 function switchTab(tab, btn) {
-  if (currentTab !== 'subscribers' && currentTab !== 'prices') {
-    collectCurrentTabData();
-  }
+  // Collect data from current tab before switching
+  if (currentTab === 'profiles') collectProfileData();
+  if (currentTab === 'prices') collectPriceData();
   currentTab = tab;
   document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
   btn.classList.add('active');
@@ -247,46 +230,163 @@ function switchTab(tab, btn) {
     document.getElementById('btn-row').style.display = 'none';
     renderSubscribers();
   } else if (tab === 'prices') {
-    document.getElementById('btn-row').style.display = 'none';
+    document.getElementById('btn-row').style.display = '';
+    document.getElementById('add-btn').style.display = 'none';
     renderPricesEditor();
-  } else {
+  } else if (tab === 'profiles') {
     document.getElementById('btn-row').style.display = '';
     document.getElementById('add-btn').style.display = '';
     document.getElementById('add-btn').textContent = '+ Pievienot skolu';
-    document.getElementById('add-btn').onclick = addSchool;
-    renderEditor();
+    renderProfiles();
   }
   document.getElementById('save-msg').textContent = '';
 }
 
-function renderEditor() {
-  if (currentTab === 'subscribers' || currentTab === 'prices') return;
+// ======== PROFILES TAB ========
+
+function renderProfiles() {
   var area = document.getElementById('editor-area');
-  var list = schoolsData[currentTab] || [];
+  if (!pricesData || !pricesData.schools) {
+    area.innerHTML = '<div class="editor-card"><div class="sub-empty">Nav datu. Palaidiet seed skriptu vai pievienojiet skolu manu\u0101li.</div></div>';
+    return;
+  }
+  var schools = pricesData.schools;
+  var keys = Object.keys(schools);
   var html = '';
-  list.forEach(function(s, i) {
+
+  keys.forEach(function(schoolKey) {
+    var s = schools[schoolKey];
     var previewBg = 'background:' + (s.color || '#1B4D3E') + ';';
     var previewContent = (s.logoUrl && s.logoUrl.length > 0)
-      ? '<img src="' + s.logoUrl + '" style="width:100%;height:100%;object-fit:contain;">'
-      : (s.initials || s.name.charAt(0));
-    html += '<div class="editor-card">' +
-      '<h3><span>#' + (i + 1) + ' ' + s.name + '</span><button class="remove-btn" onclick="removeSchool(' + i + ')">Dz\u0113st</button></h3>' +
-      '<div class="field-group"><label>Nosaukums</label><input data-idx="' + i + '" data-field="name" value="' + (s.name || '').replace(/"/g, '&quot;') + '"></div>' +
-      '<div class="field-group"><label>Apraksts</label><input data-idx="' + i + '" data-field="detail" value="' + (s.detail || '').replace(/"/g, '&quot;') + '"></div>' +
-      '<div class="field-group"><label>URL</label><input data-idx="' + i + '" data-field="url" value="' + (s.url || '').replace(/"/g, '&quot;') + '"></div>' +
-      '<div class="field-group"><label>Logo URL (tuk\u0161s = r\u0101da inici\u0101\u013cus)</label><input data-idx="' + i + '" data-field="logoUrl" value="' + (s.logoUrl || '').replace(/"/g, '&quot;') + '" oninput="updateLogoPreview(' + i + ', this.value)"></div>' +
-      '<div class="field-row">' +
-        '<div class="field-group"><label>Kr\u0101sa</label><input type="color" data-idx="' + i + '" data-field="color" value="' + (s.color || '#1B4D3E') + '"></div>' +
-        '<div class="field-group"><label>Inici\u0101\u013ci</label><input data-idx="' + i + '" data-field="initials" value="' + (s.initials || '').replace(/"/g, '&quot;') + '"></div>' +
-      '</div>' +
-      '<div class="field-group"><label>Priek\u0161skat\u012bjums</label><div class="logo-preview" id="preview-' + i + '" style="' + previewBg + '">' + previewContent + '</div></div>' +
-    '</div>';
+      ? '<img src="' + s.logoUrl + '">'
+      : (s.initials || (s.name ? s.name.charAt(0) : '?'));
+
+    // Count categories
+    var cats = s.categories ? Object.keys(s.categories) : [];
+    var catList = cats.length > 0 ? cats.join(', ') : 'nav';
+
+    html += '<div class="profile-card">';
+    html += '<h4>';
+    html += '<span>';
+    html += '<div class="logo-preview" style="' + previewBg + ';display:inline-flex;vertical-align:middle;margin-right:8px;">' + previewContent + '</div>';
+    html += (s.name || schoolKey);
+    html += ' <span style="font-size:0.7rem;color:var(--text-secondary);font-weight:400;">(Kategorijas: ' + catList + ')</span>';
+    html += '</span>';
+    html += '<button class="remove-btn" onclick="removeSchool(\'' + schoolKey.replace(/'/g, "\\'") + '\')">Dz\u0113st skolu</button>';
+    html += '</h4>';
+
+    // Profile fields
+    html += '<div class="field-row">';
+    html += '<div class="field-group"><label>Nosaukums</label><input data-profile="' + schoolKey + '" data-pfield="name" value="' + (s.name || '').replace(/"/g, '&quot;') + '"></div>';
+    html += '<div class="field-group"><label>M\u0101jaslapa</label><input data-profile="' + schoolKey + '" data-pfield="website" value="' + (s.website || '').replace(/"/g, '&quot;') + '"></div>';
+    html += '</div>';
+
+    html += '<div class="field-group"><label>Logo URL (tuk\u0161s = r\u0101da inici\u0101\u013cus)</label><input data-profile="' + schoolKey + '" data-pfield="logoUrl" value="' + (s.logoUrl || '').replace(/"/g, '&quot;') + '" oninput="updateProfilePreview(\'' + schoolKey.replace(/'/g, "\\'") + '\', this.value)"></div>';
+
+    html += '<div class="field-row">';
+    html += '<div class="field-group"><label>Kr\u0101sa</label><input type="color" data-profile="' + schoolKey + '" data-pfield="color" value="' + (s.color || '#1B4D3E') + '"></div>';
+    html += '<div class="field-group"><label>Inici\u0101\u013ci (ja nav logo)</label><input data-profile="' + schoolKey + '" data-pfield="initials" value="' + (s.initials || '').replace(/"/g, '&quot;') + '"></div>';
+    html += '</div>';
+
+    // CSDD statistics editing
+    html += '<div class="csdd-section-admin">';
+    html += '<h5>&#x1F4CA; CSDD statistika</h5>';
+
+    var csddGroups = [
+      { key: 'teorija', label: 'Teorija' },
+      { key: 'brauksana_A', label: 'Brauk\u0161ana A' },
+      { key: 'brauksana_B', label: 'Brauk\u0161ana B' },
+      { key: 'brauksana_parejie', label: 'Brauk\u0161. p\u0101r\u0113jie (C/D)' }
+    ];
+
+    csddGroups.forEach(function(g) {
+      var csddVal = (s.csdd && s.csdd[g.key]) ? s.csdd[g.key] : { kartoja: 0, nokartoja: 0, procents: 0 };
+      html += '<div class="csdd-row-label">' + g.label + '</div>';
+      html += '<div class="csdd-row">';
+      html += '<div class="field-group"><label>K\u0101rtoja</label><input type="number" data-profile="' + schoolKey + '" data-csdd-group="' + g.key + '" data-csdd-field="kartoja" value="' + (csddVal.kartoja || 0) + '"></div>';
+      html += '<div class="field-group"><label>Nok\u0101rtoja</label><input type="number" data-profile="' + schoolKey + '" data-csdd-group="' + g.key + '" data-csdd-field="nokartoja" value="' + (csddVal.nokartoja || 0) + '"></div>';
+      html += '<div class="field-group"><label>Procents (%)</label><input type="number" step="0.01" data-profile="' + schoolKey + '" data-csdd-group="' + g.key + '" data-csdd-field="procents" value="' + (csddVal.procents || 0) + '"></div>';
+      html += '</div>';
+    });
+
+    html += '</div>';
+    html += '</div>';
   });
-  if (list.length === 0) {
-    html = '<div class="editor-card"><p style="color:var(--text-secondary);font-style:italic;">Nav autoskolu \u0161ai kategorijai. Nospied \u201c+ Pievienot skolu\u201d.</p></div>';
+
+  if (keys.length === 0) {
+    html = '<div class="editor-card"><div class="sub-empty">Nav autoskolu. Nospied \u201c+ Pievienot skolu\u201d.</div></div>';
   }
+
   area.innerHTML = html;
 }
+
+function updateProfilePreview(schoolKey, url) {
+  // Preview is inline in the card header, re-render is simplest
+}
+
+function collectProfileData() {
+  if (!pricesData || !pricesData.schools) return;
+
+  // Collect profile fields
+  var inputs = document.querySelectorAll('input[data-profile][data-pfield]');
+  inputs.forEach(function(inp) {
+    var sk = inp.getAttribute('data-profile');
+    var field = inp.getAttribute('data-pfield');
+    if (pricesData.schools[sk]) {
+      pricesData.schools[sk][field] = inp.value;
+    }
+  });
+
+  // Collect CSDD fields
+  var csddInputs = document.querySelectorAll('input[data-profile][data-csdd-group][data-csdd-field]');
+  csddInputs.forEach(function(inp) {
+    var sk = inp.getAttribute('data-profile');
+    var group = inp.getAttribute('data-csdd-group');
+    var field = inp.getAttribute('data-csdd-field');
+    if (pricesData.schools[sk]) {
+      if (!pricesData.schools[sk].csdd) pricesData.schools[sk].csdd = {};
+      if (!pricesData.schools[sk].csdd[group]) pricesData.schools[sk].csdd[group] = { kartoja: 0, nokartoja: 0, procents: 0 };
+      pricesData.schools[sk].csdd[group][field] = parseFloat(inp.value) || 0;
+    }
+  });
+}
+
+function addSchool() {
+  if (currentTab === 'profiles') {
+    collectProfileData();
+    if (!pricesData) pricesData = { schools: {}, lastUpdated: '' };
+    if (!pricesData.schools) pricesData.schools = {};
+    var newKey = 'JaunaSkola_' + Date.now();
+    pricesData.schools[newKey] = {
+      name: 'Jauna autoskola',
+      website: 'https://',
+      color: '#1B4D3E',
+      initials: '?',
+      logoUrl: '',
+      csdd: {
+        teorija: { kartoja: 0, nokartoja: 0, procents: 0 },
+        brauksana_A: { kartoja: 0, nokartoja: 0, procents: 0 },
+        brauksana_B: { kartoja: 0, nokartoja: 0, procents: 0 },
+        brauksana_parejie: { kartoja: 0, nokartoja: 0, procents: 0 }
+      },
+      categories: {}
+    };
+    renderProfiles();
+    window.scrollTo(0, document.body.scrollHeight);
+  }
+}
+
+function removeSchool(schoolKey) {
+  if (!pricesData || !pricesData.schools || !pricesData.schools[schoolKey]) return;
+  var name = pricesData.schools[schoolKey].name || schoolKey;
+  if (confirm('Vai tie\u0161\u0101m dz\u0113st "' + name + '" un visas t\u0101s cenas?')) {
+    collectProfileData();
+    delete pricesData.schools[schoolKey];
+    renderProfiles();
+  }
+}
+
+// ======== SUBSCRIBERS TAB ========
 
 function renderSubscribers() {
   var area = document.getElementById('editor-area');
@@ -309,7 +409,7 @@ function renderSubscribers() {
   area.innerHTML = html;
 }
 
-// ======== PRICES EDITOR ========
+// ======== PRICES TAB ========
 
 var priceFields = [
   { key: 'registracija', label: 'Re\u0123istr\u0101cija (\u20ac)' },
@@ -334,7 +434,7 @@ function switchPriceCat(cat, btn) {
 function renderPricesEditor() {
   var area = document.getElementById('editor-area');
   var html = '<div class="editor-card">';
-  html += '<h3>Autoskolu cenas</h3>';
+  html += '<h3>Autoskolu cenas pa kategorij\u0101m</h3>';
   html += '<div class="price-cat-tabs">';
   var cats = ['A', 'B', 'C', 'D'];
   cats.forEach(function(c) {
@@ -345,10 +445,10 @@ function renderPricesEditor() {
   html += '<div id="price-schools-area"></div>';
   html += '</div>';
 
-  // Save + Add buttons for prices
+  // Add category button
   html += '<div class="btn-row">';
-  html += '<button class="save-btn" onclick="savePrices()">Saglab\u0101t cenas</button>';
-  html += '<button class="add-btn" onclick="addPriceSchool()">+ Pievienot skolu</button>';
+  html += '<button class="save-btn" onclick="saveAll()">Saglab\u0101t cenas</button>';
+  html += '<button class="add-btn" onclick="addPriceSchoolCat()">+ Pievienot skolu \u0161ai kategorij.</button>';
   html += '</div>';
 
   area.innerHTML = html;
@@ -375,13 +475,7 @@ function renderPriceSchools() {
     html += '<div class="price-school-card">';
     html += '<h4><span>' + (school.name || schoolKey) + '</span><button class="remove-btn" onclick="removePriceSchoolCat(\'' + schoolKey.replace(/'/g, "\\'") + '\')">No\u0146emt no ' + priceCat + '</button></h4>';
 
-    // School meta
-    html += '<div class="field-row">';
-    html += '<div class="field-group"><label>Nosaukums</label><input data-price-school="' + schoolKey + '" data-price-meta="name" value="' + (school.name || '').replace(/"/g, '&quot;') + '"></div>';
-    html += '<div class="field-group"><label>M\u0101jaslapa</label><input data-price-school="' + schoolKey + '" data-price-meta="website" value="' + (school.website || '').replace(/"/g, '&quot;') + '"></div>';
-    html += '</div>';
-
-    // Price fields
+    // Price fields only (profile is in Profili tab)
     html += '<div class="field-row-3">';
     priceFields.forEach(function(f) {
       var val = cat[f.key];
@@ -396,22 +490,13 @@ function renderPriceSchools() {
   });
 
   if (count === 0) {
-    html = '<div class="sub-empty">Nav skolu ar ' + priceCat + ' kategoriju. Nospiediet "+ Pievienot skolu".</div>';
+    html = '<div class="sub-empty">Nav skolu ar ' + priceCat + ' kategoriju. Nospiediet "+ Pievienot skolu \u0161ai kategorij.".</div>';
   }
   container.innerHTML = html;
 }
 
 function collectPriceData() {
   if (!pricesData || !pricesData.schools) return;
-  // Collect meta fields
-  var metaInputs = document.querySelectorAll('input[data-price-school][data-price-meta]');
-  metaInputs.forEach(function(inp) {
-    var sk = inp.getAttribute('data-price-school');
-    var field = inp.getAttribute('data-price-meta');
-    if (pricesData.schools[sk]) {
-      pricesData.schools[sk][field] = inp.value;
-    }
-  });
   // Collect price fields
   var priceInputs = document.querySelectorAll('input[data-price-school][data-price-field]');
   priceInputs.forEach(function(inp) {
@@ -437,17 +522,44 @@ function collectPriceData() {
   });
 }
 
-function addPriceSchool() {
+function addPriceSchoolCat() {
   collectPriceData();
-  if (!pricesData) pricesData = { schools: {}, lastUpdated: '' };
-  if (!pricesData.schools) pricesData.schools = {};
-  var newKey = 'JaunaSkola_' + Date.now();
-  pricesData.schools[newKey] = {
-    name: 'Jauna autoskola',
-    website: 'https://',
-    categories: {}
-  };
-  pricesData.schools[newKey].categories[priceCat] = {
+  if (!pricesData || !pricesData.schools) {
+    alert('Vispirms pievienojiet skolu Profili sada\u013c\u0101.');
+    return;
+  }
+  // Show list of schools that DON'T have this category yet
+  var schools = pricesData.schools;
+  var available = [];
+  Object.keys(schools).forEach(function(key) {
+    var s = schools[key];
+    if (!s.categories) s.categories = {};
+    if (!s.categories[priceCat]) {
+      available.push({ key: key, name: s.name || key });
+    }
+  });
+
+  if (available.length === 0) {
+    alert('Visas skolas jau ir pievienotas ' + priceCat + ' kategorijai.');
+    return;
+  }
+
+  var msg = 'Izv\u0113lieties skolu, ko pievienot ' + priceCat + ' kategorijai:\n\n';
+  available.forEach(function(a, i) {
+    msg += (i + 1) + '. ' + a.name + '\n';
+  });
+  msg += '\nIevadiet numuru:';
+
+  var choice = prompt(msg);
+  if (!choice) return;
+  var idx = parseInt(choice) - 1;
+  if (idx < 0 || idx >= available.length) {
+    alert('Nepareizs numurs.');
+    return;
+  }
+
+  var chosenKey = available[idx].key;
+  pricesData.schools[chosenKey].categories[priceCat] = {
     teorija: null,
     brauksana_stunda: null,
     min_stundas: null,
@@ -462,99 +574,29 @@ function removePriceSchoolCat(schoolKey) {
   if (confirm('No\u0146emt "' + name + '" no ' + priceCat + ' kategorijas?')) {
     collectPriceData();
     delete pricesData.schools[schoolKey].categories[priceCat];
-    // If no categories left, remove the school entirely
-    var remaining = Object.keys(pricesData.schools[schoolKey].categories || {});
-    if (remaining.length === 0) {
-      delete pricesData.schools[schoolKey];
-    }
     renderPriceSchools();
   }
 }
 
-function savePrices() {
-  collectPriceData();
+// ======== SAVE ========
+
+function saveAll() {
+  if (currentTab === 'profiles') collectProfileData();
+  if (currentTab === 'prices') collectPriceData();
+
   if (typeof firebase === 'undefined') {
     document.getElementById('save-msg').textContent = 'Firebase nav pieejams.';
     return;
   }
+
   var now = new Date();
   var dateStr = now.toLocaleDateString('lv-LV', {
     year: 'numeric', month: '2-digit', day: '2-digit',
     hour: '2-digit', minute: '2-digit'
   });
   pricesData.lastUpdated = dateStr;
+
   firebase.database().ref('prices').set(pricesData).then(function() {
-    document.getElementById('save-msg').textContent = 'Cenas saglab\u0101tas!';
-    setTimeout(function() { document.getElementById('save-msg').textContent = ''; }, 3000);
-  }).catch(function(err) {
-    document.getElementById('save-msg').textContent = 'K\u013c\u016bda: ' + err.message;
-  });
-}
-
-// ======== SCHOOL EDITOR FUNCTIONS ========
-
-function updateLogoPreview(idx, url) {
-  var preview = document.getElementById('preview-' + idx);
-  if (!preview) return;
-  if (url && url.trim()) {
-    preview.innerHTML = '<img src="' + url.trim() + '" style="width:100%;height:100%;object-fit:contain;">';
-  } else {
-    var initialsInput = document.querySelector('input[data-idx="' + idx + '"][data-field="initials"]');
-    preview.innerHTML = initialsInput ? initialsInput.value : '';
-  }
-}
-
-function collectCurrentTabData() {
-  if (currentTab === 'subscribers' || currentTab === 'prices') return;
-  var inputs = document.querySelectorAll('input[data-idx][data-field]');
-  inputs.forEach(function(input) {
-    var idx = parseInt(input.getAttribute('data-idx'));
-    var field = input.getAttribute('data-field');
-    if (schoolsData[currentTab] && schoolsData[currentTab][idx]) {
-      schoolsData[currentTab][idx][field] = input.value;
-    }
-  });
-}
-
-function addSchool() {
-  if (currentTab === 'subscribers' || currentTab === 'prices') return;
-  collectCurrentTabData();
-  if (!schoolsData[currentTab]) schoolsData[currentTab] = [];
-  schoolsData[currentTab].push({
-    name: 'Jauna autoskola',
-    detail: 'Apraksts',
-    url: 'https://',
-    color: '#1B4D3E',
-    initials: '?',
-    logoUrl: ''
-  });
-  renderEditor();
-  window.scrollTo(0, document.body.scrollHeight);
-}
-
-function removeSchool(idx) {
-  if (currentTab === 'subscribers' || currentTab === 'prices') return;
-  collectCurrentTabData();
-  if (schoolsData[currentTab] && schoolsData[currentTab][idx] !== undefined) {
-    var name = schoolsData[currentTab][idx].name;
-    if (confirm('Vai tie\u0161\u0101m dz\u0113st "' + name + '"?')) {
-      schoolsData[currentTab].splice(idx, 1);
-      renderEditor();
-    }
-  }
-}
-
-function saveAll() {
-  if (currentTab === 'prices') {
-    savePrices();
-    return;
-  }
-  collectCurrentTabData();
-  if (typeof firebase === 'undefined') {
-    document.getElementById('save-msg').textContent = 'Firebase nav pieejams.';
-    return;
-  }
-  firebase.database().ref('schools').set(schoolsData).then(function() {
     document.getElementById('save-msg').textContent = 'Izmai\u0146as saglab\u0101tas!';
     setTimeout(function() { document.getElementById('save-msg').textContent = ''; }, 3000);
   }).catch(function(err) {
@@ -566,7 +608,7 @@ document.getElementById('login-pass').addEventListener('keypress', function(e) {
   if (e.key === 'Enter') doLogin();
 });
 
-renderEditor();
+renderProfiles();
 </script>
 
 <!-- SCRIPT BLOCK 2: Firebase -->
@@ -586,18 +628,6 @@ try {
   firebase.auth().onAuthStateChanged(function(user) {
     if (user) {
       document.getElementById('login-overlay').classList.add('hidden');
-      firebase.database().ref('schools').on('value', function(snapshot) {
-        var fbData = snapshot.val();
-        if (fbData) {
-          ['A', 'B', 'C', 'D'].forEach(function(cat) {
-            if (fbData[cat]) { schoolsData[cat] = fbData[cat]; }
-          });
-        } else {
-          schoolsData = JSON.parse(JSON.stringify(defaultSchools));
-          firebase.database().ref('schools').set(schoolsData);
-        }
-        if (currentTab !== 'subscribers' && currentTab !== 'prices') renderEditor();
-      });
       firebase.database().ref('subscribers').on('value', function(snapshot) {
         subscribersList = [];
         var fbSubs = snapshot.val();
@@ -618,6 +648,7 @@ try {
         } else {
           pricesData = { schools: {}, lastUpdated: '' };
         }
+        if (currentTab === 'profiles') renderProfiles();
         if (currentTab === 'prices') renderPriceSchools();
       });
     } else {

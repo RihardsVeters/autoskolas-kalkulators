@@ -158,6 +158,10 @@
     font-size: 0.65rem; font-weight: 800; flex-shrink: 0;
   }
   .school-link-hint { font-size: 0.62rem; color: var(--accent-light); font-weight: 600; margin-top: auto; }
+  .school-csdd-badge {
+    font-size: 0.65rem; font-weight: 700; color: var(--accent);
+    background: #E8F5EE; padding: 2px 8px; border-radius: 6px;
+  }
   .disclaimer { margin-top: 24px; font-size: 0.72rem; color: var(--text-secondary); text-align: center; line-height: 1.5; padding: 0 12px; }
   .source-list { margin-top: 8px; font-size: 0.68rem; color: var(--text-secondary); text-align: center; line-height: 1.6; }
   .source-list a { color: var(--accent-light); text-decoration: none; }
@@ -366,45 +370,15 @@
     * Cenas ir orient&#x0113;jo&#x0161;as un var at&#x0161;&#x0137;irties atkar&#x012b;b&#x0101; no autoskolas, fili&#x0101;les un instruktora.
     Brauk&#x0161;anas nodarb&#x012b;bu skaits nor&#x0101;d&#x012b;ts k&#x0101; minim&#x0101;lais &#x2014; re&#x0101;lais skaits var b&#x016b;t liel&#x0101;ks.
   </div>
-  <div class="source-list">
-    Datu avoti: <a href="https://www.csdd.lv" target="_blank">CSDD</a> &#x00b7;
-    <a href="https://presto.lv" target="_blank">Presto</a> &#x00b7;
-    <a href="https://credoautoprieks.lv" target="_blank">Credo Autoprieks</a> &#x00b7;
-    <a href="https://dbs.lv" target="_blank">DBS</a> &#x00b7;
-    <a href="https://einsteins.lv" target="_blank">Ein&#x0161;teins</a> &#x00b7;
-    <a href="https://akategorija.com" target="_blank">AkategorijaLV</a> &#x00b7;
-    <a href="https://buts.lv" target="_blank">BUTS</a> &#x00b7;
-    <a href="https://www.fortuna.lv" target="_blank">Fort&#x016b;na</a>
+  <div class="source-list" id="source-list">
+    Datu avoti: <a href="https://www.csdd.lv" target="_blank">CSDD</a>
   </div>
   <a href="admin.html" class="admin-link">Administr&#x0101;cija</a>
 </div>
 
 <!-- SCRIPT BLOCK 1: UI functions (no Firebase dependency) -->
 <script>
-var defaultSchools = {
-  A: [
-    { name: 'AkategorijaLV', detail: '100% moto specializ\u0101cija, R\u012bga. Teorija + prakse no 2009.g.', url: 'https://akategorija.com', color: '#C0392B', initials: 'A kat', logoUrl: '' },
-    { name: 'DBS Autoskola', detail: 'Dro\u0161as Brauk\u0161anas Skola, A kat. teorija \u20ac115', url: 'https://dbs.lv', color: '#2C3E50', initials: 'DBS', logoUrl: '' },
-    { name: 'Ein\u0161teins', detail: 'Liel\u0101k\u0101 autoskola Latvij\u0101, 30000+ audz\u0113k\u0146u', url: 'https://einsteins.lv', color: '#E67E22', initials: 'E', logoUrl: '' }
-  ],
-  B: [
-    { name: 'Ein\u0161teins', detail: 'Piepras\u012bt\u0101k\u0101 autoskola Latvij\u0101, 69% CSDD teor. nok\u0101rt.', url: 'https://einsteins.lv', color: '#E67E22', initials: 'E', logoUrl: '' },
-    { name: 'Presto', detail: '76% CSDD nok\u0101rto\u0161ana, 50+ fili\u0101les vis\u0101 Latvij\u0101', url: 'https://presto.lv', color: '#1B4D3E', initials: 'P', logoUrl: '' },
-    { name: 'Credo Autoprieks', detail: '15+ gadu pieredze, 19 fili\u0101les, teorija no \u20ac69', url: 'https://credoautoprieks.lv', color: '#D4A017', initials: 'CA', logoUrl: '' }
-  ],
-  C: [
-    { name: 'Ein\u0161teins', detail: 'C, CE kategorijas, online un kl\u0101tien\u0113, visa Latvija', url: 'https://einsteins.lv', color: '#E67E22', initials: 'E', logoUrl: '' },
-    { name: 'BUTS', detail: 'C + 95.kods vien\u0101 kurs\u0101, Aizkraukle', url: 'https://buts.lv', color: '#E74C3C', initials: 'BUTS', logoUrl: '' },
-    { name: 'Fort\u016bna', detail: '14 fili\u0101les, C, CE, C1 kat., jaun\u0101kais autoparks', url: 'https://www.fortuna.lv', color: '#8E44AD', initials: 'F', logoUrl: '' }
-  ],
-  D: [
-    { name: 'Credo Autoprieks', detail: 'D kat. no \u20ac69, R\u012bga, Jelgava, Liep\u0101ja, Ventspils', url: 'https://credoautoprieks.lv', color: '#D4A017', initials: 'CA', logoUrl: '' },
-    { name: 'Fort\u016bna', detail: 'D, D1, DE kat., 14 fili\u0101les vis\u0101 Latvij\u0101', url: 'https://www.fortuna.lv', color: '#8E44AD', initials: 'F', logoUrl: '' },
-    { name: 'Presto', detail: 'D, D1, DE kategorijas, 76% CSDD nok\u0101rto\u0161ana', url: 'https://presto.lv', color: '#1B4D3E', initials: 'P', logoUrl: '' }
-  ]
-};
-
-var schools = JSON.parse(JSON.stringify(defaultSchools));
+var pricesData = null;
 
 var data = {
   A: { theoryPrice: 50, theoryNote: '15 teorijas stundas (3 modu\u013ci pa 5 stund\u0101m) + CSDD re\u0123istr\u0101cija.', lessonPrice: 25, minLessons: 20, maxLessons: 40, drivingNote: 'Cena no \u20ac25/st. Minimums \u2014 20 akad\u0113misk\u0101s stundas (10 nodarb\u012bbas pa 2 ak.st.).', firstAid: 55, medical: 40, csddDriving: 42.69, csddDrivingDesc: 'A kategorija' },
@@ -417,11 +391,37 @@ var currentCat = 'A';
 var lessonCount = 20;
 var options = { firstaid: true, medical: true, 'csdd-theory': true, 'csdd-driving': true, 'csdd-license': true };
 
+function getTop3Schools(cat) {
+  if (!pricesData || !pricesData.schools) return [];
+  var schools = pricesData.schools;
+  var keys = Object.keys(schools).filter(function(key) {
+    return schools[key].categories && schools[key].categories[cat];
+  });
+  // Sort by CSDD theory pass rate (highest first)
+  keys.sort(function(a, b) {
+    var aP = (schools[a].csdd && schools[a].csdd.teorija && schools[a].csdd.teorija.kartoja > 0) ? schools[a].csdd.teorija.procents : -1;
+    var bP = (schools[b].csdd && schools[b].csdd.teorija && schools[b].csdd.teorija.kartoja > 0) ? schools[b].csdd.teorija.procents : -1;
+    return bP - aP;
+  });
+  return keys.slice(0, 3).map(function(key) {
+    var s = schools[key];
+    var theoryPct = (s.csdd && s.csdd.teorija && s.csdd.teorija.kartoja > 0) ? s.csdd.teorija.procents : null;
+    return {
+      name: s.name || key,
+      url: s.website || '',
+      color: s.color || '#1B4D3E',
+      initials: s.initials || (s.name ? s.name.charAt(0) : '?'),
+      logoUrl: s.logoUrl || '',
+      theoryPct: theoryPct
+    };
+  });
+}
+
 function updateSchools(cat) {
   var grid = document.getElementById('schools-grid');
-  var list = (schools[cat] || []).slice(0, 3);
+  var list = getTop3Schools(cat);
   if (!list.length) {
-    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-secondary);font-size:0.85rem;padding:20px;">Nav autoskolu datu \u0161ai kategorijai.</div>';
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-secondary);font-size:0.85rem;padding:20px;">Iel\u0101d\u0113 datus...</div>';
     return;
   }
   grid.innerHTML = list.map(function(s, i) {
@@ -429,14 +429,31 @@ function updateSchools(cat) {
       ? '<img src="' + s.logoUrl + '" alt="' + s.name + '">'
       : (s.initials || s.name.charAt(0));
     var logoStyle = 'background:' + (s.color || '#1B4D3E');
+    var csddBadge = (s.theoryPct !== null)
+      ? '<span class="school-csdd-badge">Teorija: ' + s.theoryPct + '%</span>'
+      : '';
     return '<a class="school-card" href="' + s.url + '" target="_blank" rel="noopener">' +
       '<span class="school-rank">' + (i + 1) + '</span>' +
       '<div class="school-logo" style="' + logoStyle + '">' + logoContent + '</div>' +
       '<div class="school-name">' + s.name + '</div>' +
-      '<div class="school-detail">' + s.detail + '</div>' +
+      csddBadge +
       '<div class="school-link-hint">Atv\u0113rt m\u0101jas lapu \u2192</div>' +
     '</a>';
   }).join('');
+}
+
+function updateSourceList() {
+  if (!pricesData || !pricesData.schools) return;
+  var schools = pricesData.schools;
+  var links = ['<a href="https://www.csdd.lv" target="_blank">CSDD</a>'];
+  Object.keys(schools).forEach(function(key) {
+    var s = schools[key];
+    if (s.website && s.name) {
+      var domain = s.website.replace('https://', '').replace('http://', '').replace(/\/.*/, '');
+      links.push('<a href="' + s.website + '" target="_blank">' + s.name + '</a>');
+    }
+  });
+  document.getElementById('source-list').innerHTML = 'Datu avoti: ' + links.join(' \u00b7\n    ');
 }
 
 function selectCategory(cat) {
@@ -576,13 +593,13 @@ try {
     projectId: "autoskolu-kalkulators"
   };
   firebase.initializeApp(firebaseConfig);
-  firebase.database().ref('schools').on('value', function(snapshot) {
-    var fbData = snapshot.val();
-    if (fbData) {
-      ['A', 'B', 'C', 'D'].forEach(function(cat) {
-        if (fbData[cat]) { schools[cat] = fbData[cat]; }
-      });
+  // Load school data from /prices path (single source of truth)
+  firebase.database().ref('prices').on('value', function(snapshot) {
+    var fbPrices = snapshot.val();
+    if (fbPrices) {
+      pricesData = fbPrices;
       updateSchools(currentCat);
+      updateSourceList();
     }
   });
 } catch(e) {
