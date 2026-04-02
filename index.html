@@ -138,7 +138,7 @@
     display: flex; align-items: center; justify-content: center;
     font-weight: 900; font-size: 0.7rem; color: white;
     letter-spacing: 0.5px; text-transform: uppercase; line-height: 1.1; flex-shrink: 0;
-    overflow: hidden; background-size: contain; background-repeat: no-repeat; background-position: center;
+    overflow: hidden;
   }
   .school-logo img { width: 100%; height: 100%; object-fit: contain; }
   .school-name { font-size: 0.82rem; font-weight: 700; line-height: 1.2; }
@@ -160,65 +160,53 @@
   }
   .admin-link:hover { color: var(--accent-light); }
 
-  /* Subscribe Overlay */
-  .subscribe-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(27, 77, 62, 0.97);
-    z-index: 9999; display: flex; align-items: center; justify-content: center;
-    opacity: 1; transition: opacity 0.4s ease;
+  /* Subscribe Gate - partial overlay */
+  .gated-content { position: relative; }
+  .gated-content.locked::before {
+    content: '';
+    position: absolute; top: 0; left: -16px; right: -16px; bottom: 0;
+    background: linear-gradient(to bottom, rgba(245,240,232,0) 0%, rgba(245,240,232,0.85) 30%, rgba(245,240,232,1) 60%);
+    z-index: 10; pointer-events: none;
   }
-  .subscribe-overlay.hidden { opacity: 0; pointer-events: none; }
-  .subscribe-box {
-    background: white; border-radius: 20px; padding: 48px 36px;
-    max-width: 420px; width: 90%; text-align: center;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-    transform: translateY(0); transition: transform 0.4s ease;
+  .gated-content.locked { pointer-events: none; }
+  .subscribe-gate {
+    position: relative; z-index: 20;
+    background: var(--card); border-radius: 20px;
+    padding: 36px 28px; margin: -40px auto 24px;
+    max-width: 440px; text-align: center;
+    box-shadow: 0 8px 40px rgba(27,77,62,0.15);
+    border: 2px solid var(--accent);
   }
-  .subscribe-overlay.hidden .subscribe-box { transform: translateY(30px); }
-  .subscribe-box .sub-icon { font-size: 3rem; margin-bottom: 16px; display: block; }
-  .subscribe-box h2 { color: var(--accent); font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; }
-  .subscribe-box p { color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5; margin-bottom: 24px; }
-  .subscribe-form { display: flex; flex-direction: column; gap: 12px; }
+  .subscribe-gate.hidden { display: none; }
+  .subscribe-gate .sub-icon { font-size: 2.4rem; margin-bottom: 12px; display: block; }
+  .subscribe-gate h2 { color: var(--accent); font-size: 1.2rem; font-weight: 800; margin-bottom: 6px; }
+  .subscribe-gate p { color: var(--text-secondary); font-size: 0.85rem; line-height: 1.5; margin-bottom: 20px; }
+  .subscribe-form { display: flex; flex-direction: column; gap: 10px; }
   .subscribe-form input[type="email"] {
-    width: 100%; padding: 14px 16px; border: 2px solid var(--border);
+    width: 100%; padding: 12px 14px; border: 2px solid var(--border);
     border-radius: 10px; font-size: 0.95rem; outline: none;
     transition: border-color 0.2s; font-family: inherit;
   }
   .subscribe-form input[type="email"]:focus { border-color: var(--accent); }
   .subscribe-form input[type="email"].error { border-color: var(--danger); }
   .subscribe-form button {
-    width: 100%; padding: 14px; background: var(--accent); color: white;
-    border: none; border-radius: 10px; font-size: 1rem; font-weight: 700;
+    width: 100%; padding: 12px; background: var(--accent); color: white;
+    border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 700;
     cursor: pointer; transition: all 0.2s; font-family: inherit;
   }
-  .subscribe-form button:hover { background: var(--accent-light); transform: translateY(-1px); }
-  .subscribe-form button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
-  .sub-error { color: var(--danger); font-size: 0.78rem; min-height: 20px; }
-  .sub-privacy { font-size: 0.68rem; color: var(--text-secondary); margin-top: 4px; }
+  .subscribe-form button:hover { background: var(--accent-light); }
+  .subscribe-form button:disabled { opacity: 0.6; cursor: not-allowed; }
+  .sub-error { color: var(--danger); font-size: 0.78rem; min-height: 18px; }
+  .sub-privacy { font-size: 0.68rem; color: var(--text-secondary); margin-top: 2px; }
   @media (max-width: 480px) {
     .hero h1 { font-size: 1.6rem; }
     .total-amount { font-size: 2.2rem; }
     .breakdown { grid-template-columns: 1fr; }
-    .subscribe-box { padding: 36px 24px; }
+    .subscribe-gate { padding: 28px 20px; margin-top: -30px; }
   }
 </style>
 </head>
 <body>
-
-<!-- Subscribe Overlay -->
-<div class="subscribe-overlay" id="subscribe-overlay">
-  <div class="subscribe-box">
-    <span class="sub-icon">🚗</span>
-    <h2>Autoskolas Kalkulators</h2>
-    <p>Ievadi savu e-pastu, lai piekļūtu bezmaksas kalkulatoram un uzzinātu reālās autoskolas izmaksas Latvijā.</p>
-    <div class="subscribe-form">
-      <input type="email" id="sub-email" placeholder="tavs@epasts.lv" autocomplete="email">
-      <div class="sub-error" id="sub-error"></div>
-      <button id="sub-btn" onclick="handleSubscribe()">Piekļūt kalkulatoram</button>
-      <div class="sub-privacy">Mēs nenosūtīsim spam. Tikai noderīga informācija.</div>
-    </div>
-  </div>
-</div>
 
 <div class="hero">
   <h1>Autoskolas Izmaksu Kalkulators</h1>
@@ -279,7 +267,7 @@
       </div>
       <input type="range" id="lesson-slider" min="1" max="60" value="20" oninput="updateDriving()">
       <div style="display:flex;justify-content:space-between;margin-top:6px;">
-        <span style="font-size:0.7rem;color:var(--text-secondary);" id="slider-min-label">Minimums</span>
+        <span style="font-size:0.7rem;color:var(--text-secondary);">Minimums</span>
         <span style="font-size:0.7rem;color:var(--text-secondary);">Papildus stundas</span>
       </div>
     </div>
@@ -291,6 +279,22 @@
       <div class="card-note" style="margin-top:4px;" id="driving-note">Cena atkarīga no instruktora.</div>
     </div>
   </div>
+
+  <!-- SUBSCRIBE GATE - appears between free and gated content -->
+  <div class="subscribe-gate" id="subscribe-gate">
+    <span class="sub-icon">🔓</span>
+    <h2>Ievadi e-pastu, lai redzētu visu</h2>
+    <p>Ievadi savu e-pastu, lai redzētu papildus pakalpojumus, CSDD eksāmenu izmaksas un kopējo summu.</p>
+    <div class="subscribe-form">
+      <input type="email" id="sub-email" placeholder="tavs@epasts.lv" autocomplete="email">
+      <div class="sub-error" id="sub-error"></div>
+      <button id="sub-btn" onclick="handleSubscribe()">Atbloķēt kalkulatoru</button>
+      <div class="sub-privacy">Mēs nenosūtīsim spam. Tikai noderīga informācija.</div>
+    </div>
+  </div>
+
+  <!-- GATED CONTENT - blurred/hidden until subscribed -->
+  <div class="gated-content locked" id="gated-content">
 
   <div class="section-title">Papildus pakalpojumi</div>
   <div class="card">
@@ -347,6 +351,8 @@
     <div class="breakdown" id="breakdown"></div>
   </div>
 
+  </div> <!-- end gated-content -->
+
   <div class="disclaimer">
     * Cenas ir orientējošas un var atšķirties atkarībā no autoskolas, filiāles un instruktora.
     Braukšanas nodarbību skaits norādīts kā minimālais — reālais skaits var būt lielāks.
@@ -381,14 +387,13 @@ var db = firebase.database();
 // ===== SUBSCRIBE GATE =====
 function checkSubscription() {
   var saved = localStorage.getItem('autoskola_subscriber');
-  if (saved) { hideOverlay(); }
+  if (saved) { unlockContent(); }
 }
 
-function hideOverlay() {
-  var overlay = document.getElementById('subscribe-overlay');
-  overlay.classList.add('hidden');
-  document.body.style.overflow = '';
-  setTimeout(function() { overlay.style.display = 'none'; }, 400);
+function unlockContent() {
+  document.getElementById('subscribe-gate').classList.add('hidden');
+  var gated = document.getElementById('gated-content');
+  gated.classList.remove('locked');
 }
 
 function handleSubscribe() {
@@ -424,15 +429,15 @@ function handleSubscribe() {
       source: 'calculator'
     }).then(function() {
       localStorage.setItem('autoskola_subscriber', email);
-      hideOverlay();
+      unlockContent();
     }).catch(function(err) {
       errorEl.textContent = 'Kļūda saglabājot. Mēģini vēlreiz.';
       btn.disabled = false;
-      btn.textContent = 'Piekļūt kalkulatoram';
+      btn.textContent = 'Atbloķēt kalkulatoru';
     });
   } else {
     localStorage.setItem('autoskola_subscriber', email);
-    hideOverlay();
+    unlockContent();
   }
 }
 
@@ -440,23 +445,22 @@ document.getElementById('sub-email').addEventListener('keypress', function(e) {
   if (e.key === 'Enter') handleSubscribe();
 });
 
-document.body.style.overflow = 'hidden';
 checkSubscription();
 
 // ===== SCHOOL DATA =====
 var defaultSchools = {
   A: [
     { name: 'AkategorijaLV', detail: '100% moto specializācija, Rīga', url: 'https://akategorija.com', color: '#C0392B', initials: 'A kat', logoUrl: '' },
-    { name: 'DBS Autoskola', detail: 'Drošas Braukšanas Skola, A kat. no €115', url: 'https://dbs.lv', color: '#2C3E50', initials: 'DBS', logoUrl: '' },
+    { name: 'DBS Autoskola', detail: 'Drošas Braukšanas Skola, A kat. no \u20AC115', url: 'https://dbs.lv', color: '#2C3E50', initials: 'DBS', logoUrl: '' },
     { name: 'Presto', detail: 'Lielākais filiāļu tīkls Latvijā', url: 'https://presto.lv', color: '#1B4D3E', initials: 'P', logoUrl: '' }
   ],
   B: [
     { name: 'Presto', detail: '76% CSDD eksāmena nokārtošana, 50+ filiāles', url: 'https://presto.lv', color: '#1B4D3E', initials: 'P', logoUrl: '' },
-    { name: 'Credo Autoprieks', detail: 'Lielākā autoskola Latvijā, teorija no €69', url: 'https://credoautoprieks.lv', color: '#D4A017', initials: 'CA', logoUrl: '' },
+    { name: 'Credo Autoprieks', detail: 'Lielākā autoskola Latvijā, teorija no \u20AC69', url: 'https://credoautoprieks.lv', color: '#D4A017', initials: 'CA', logoUrl: '' },
     { name: 'DBS Autoskola', detail: 'Drošas Braukšanas Skola, individuāla pieeja', url: 'https://dbs.lv', color: '#2C3E50', initials: 'DBS', logoUrl: '' }
   ],
   C: [
-    { name: 'Credo Autoprieks', detail: 'C kat. teorija no €69, filiāles visā Latvijā', url: 'https://credoautoprieks.lv', color: '#D4A017', initials: 'CA', logoUrl: '' },
+    { name: 'Credo Autoprieks', detail: 'C kat. teorija no \u20AC69, filiāles visā Latvijā', url: 'https://credoautoprieks.lv', color: '#D4A017', initials: 'CA', logoUrl: '' },
     { name: 'BUTS', detail: 'C + 95.kods vienā kursā, Aizkraukle', url: 'https://buts.lv', color: '#E74C3C', initials: 'BUTS', logoUrl: '' },
     { name: 'Presto', detail: 'C, C1, CE kategorijas, tālmācība pieejama', url: 'https://presto.lv', color: '#1B4D3E', initials: 'P', logoUrl: '' }
   ],
@@ -469,11 +473,18 @@ var defaultSchools = {
 
 var schools = JSON.parse(JSON.stringify(defaultSchools));
 
+// Load schools from Firebase - listen for changes
 if (firebaseConfig.apiKey !== 'YOUR_API_KEY') {
   db.ref('schools').on('value', function(snapshot) {
     var fbData = snapshot.val();
     if (fbData) {
-      schools = fbData;
+      // Merge Firebase data with defaults for any missing categories
+      ['A', 'B', 'C', 'D'].forEach(function(cat) {
+        if (fbData[cat]) {
+          schools[cat] = fbData[cat];
+        }
+      });
+      // Re-render current category schools
       updateSchools(currentCat);
     }
   });
@@ -482,11 +493,15 @@ if (firebaseConfig.apiKey !== 'YOUR_API_KEY') {
 function updateSchools(cat) {
   var grid = document.getElementById('schools-grid');
   var list = schools[cat] || [];
+  if (!list.length) {
+    grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--text-secondary);font-size:0.85rem;padding:20px;">Nav autoskolu datu šai kategorijai.</div>';
+    return;
+  }
   grid.innerHTML = list.map(function(s, i) {
-    var logoContent = s.logoUrl
+    var logoContent = (s.logoUrl && s.logoUrl.length > 0)
       ? '<img src="' + s.logoUrl + '" alt="' + s.name + '">'
-      : s.initials;
-    var logoStyle = 'background:' + s.color;
+      : (s.initials || s.name.charAt(0));
+    var logoStyle = 'background:' + (s.color || '#1B4D3E');
     return '<a class="school-card" href="' + s.url + '" target="_blank" rel="noopener">' +
       '<span class="school-rank">' + (i + 1) + '</span>' +
       '<div class="school-logo" style="' + logoStyle + '">' + logoContent + '</div>' +
@@ -498,10 +513,10 @@ function updateSchools(cat) {
 }
 
 var data = {
-  A: { theoryPrice: 50, theoryNote: '15 teorijas stundas (3 moduļi pa 5 stundām) + CSDD reģistrācija.', lessonPrice: 25, minLessons: 20, maxLessons: 40, drivingNote: 'Cena no €25/st. Minimums — 20 akadēmiskās stundas (10 nodarbības pa 2 ak.st.).', firstAid: 55, medical: 40, csddDriving: 42.69, csddDrivingDesc: 'A kategorija' },
-  B: { theoryPrice: 30, theoryNote: '55 teorijas stundas (11 moduļi — 8 e-mācība + 3 klātienē) + reģistrācija autoskolā.', lessonPrice: 40, minLessons: 20, maxLessons: 50, drivingNote: 'Cena no €30 līdz €64/nodarbību atkarībā no instruktora. Vidēji ~€40. Minimums — 10 nodarbības (20 ak.st.).', firstAid: 55, medical: 40, csddDriving: 50.57, csddDrivingDesc: 'B kategorija' },
-  C: { theoryPrice: 70, theoryNote: '50 teorijas stundas (10 moduļi) + Kods 95 + CSDD reģistrācija. Prasa B kategorijas apliecību.', lessonPrice: 31, minLessons: 20, maxLessons: 50, drivingNote: 'Cena no €31/st. Minimums — 20 akadēmiskās stundas. Ietver braukšanu ar kravas auto.', firstAid: 55, medical: 40, csddDriving: 44.21, csddDrivingDesc: 'C kategorija (ar savu auto)' },
-  D: { theoryPrice: 70, theoryNote: '30 teorijas stundas (6 moduļi) + CSDD reģistrācija. Prasa B vai C kategorijas apliecību.', lessonPrice: 39, minLessons: 12, maxLessons: 40, drivingNote: 'Cena no €39/st. Minimums — 12 akadēmiskās stundas. Braukšana ar autobusu.', firstAid: 55, medical: 40, csddDriving: 44.21, csddDrivingDesc: 'D kategorija' }
+  A: { theoryPrice: 50, theoryNote: '15 teorijas stundas (3 moduļi pa 5 stundām) + CSDD reģistrācija.', lessonPrice: 25, minLessons: 20, maxLessons: 40, drivingNote: 'Cena no \u20AC25/st. Minimums — 20 akadēmiskās stundas (10 nodarbības pa 2 ak.st.).', firstAid: 55, medical: 40, csddDriving: 42.69, csddDrivingDesc: 'A kategorija' },
+  B: { theoryPrice: 30, theoryNote: '55 teorijas stundas (11 moduļi — 8 e-mācība + 3 klātienē) + reģistrācija autoskolā.', lessonPrice: 40, minLessons: 20, maxLessons: 50, drivingNote: 'Cena no \u20AC30 līdz \u20AC64/nodarbību atkarībā no instruktora. Vidēji ~\u20AC40. Minimums — 10 nodarbības (20 ak.st.).', firstAid: 55, medical: 40, csddDriving: 50.57, csddDrivingDesc: 'B kategorija' },
+  C: { theoryPrice: 70, theoryNote: '50 teorijas stundas (10 moduļi) + Kods 95 + CSDD reģistrācija. Prasa B kategorijas apliecību.', lessonPrice: 31, minLessons: 20, maxLessons: 50, drivingNote: 'Cena no \u20AC31/st. Minimums — 20 akadēmiskās stundas. Ietver braukšanu ar kravas auto.', firstAid: 55, medical: 40, csddDriving: 44.21, csddDrivingDesc: 'C kategorija (ar savu auto)' },
+  D: { theoryPrice: 70, theoryNote: '30 teorijas stundas (6 moduļi) + CSDD reģistrācija. Prasa B vai C kategorijas apliecību.', lessonPrice: 39, minLessons: 12, maxLessons: 40, drivingNote: 'Cena no \u20AC39/st. Minimums — 12 akadēmiskās stundas. Braukšana ar autobusu.', firstAid: 55, medical: 40, csddDriving: 44.21, csddDrivingDesc: 'D kategorija' }
 };
 
 var currentCat = 'A';
