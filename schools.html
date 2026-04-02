@@ -155,9 +155,18 @@ function renderSchools() {
   var html = '';
   var count = 0;
 
-  Object.keys(schools).forEach(function(key) {
+  // Sort by CSDD theory pass rate (highest first)
+  var keys = Object.keys(schools).filter(function(key) {
+    return schools[key].categories && schools[key].categories[currentCat];
+  });
+  keys.sort(function(a, b) {
+    var aP = (schools[a].csdd && schools[a].csdd.teorija && schools[a].csdd.teorija.kartoja > 0) ? schools[a].csdd.teorija.procents : -1;
+    var bP = (schools[b].csdd && schools[b].csdd.teorija && schools[b].csdd.teorija.kartoja > 0) ? schools[b].csdd.teorija.procents : -1;
+    return bP - aP;
+  });
+
+  keys.forEach(function(key) {
     var school = schools[key];
-    if (!school.categories || !school.categories[currentCat]) return;
     count++;
     var cat = school.categories[currentCat];
     var logoStyle = 'background:' + (school.color || '#1B4D3E') + ';';
