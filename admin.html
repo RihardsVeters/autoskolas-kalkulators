@@ -161,29 +161,16 @@
   <div id="editor-area"></div>
 
   <div class="btn-row" id="btn-row">
-    <button class="save-btn" id="save-btn" onclick="saveAll()">Saglab\u0101t izmai\u0146as</button>
+    <button class="save-btn" id="save-btn" onclick="saveAll()">Saglab&#x0101;t izmai&#x0146;as</button>
     <button class="add-btn" id="add-btn" onclick="addSchool()">+ Pievienot skolu</button>
   </div>
   <div class="save-msg" id="save-msg"></div>
 
-  <a href="index.html" class="back-link">\u2190 Atpaka\u013c uz kalkulatoru</a>
+  <a href="index.html" class="back-link">&#x2190; Atpaka&#x013c; uz kalkulatoru</a>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"><\/script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"><\/script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"><\/script>
+<!-- SCRIPT BLOCK 1: UI functions (no Firebase dependency) -->
 <script>
-var firebaseConfig = {
-  apiKey: "AIzaSyBHj70dt8vxMe2K9MIn6MLCr3cMWP3mrLk",
-  authDomain: "autoskolu-kalkulators.firebaseapp.com",
-  databaseURL: "https://autoskolu-kalkulators-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "autoskolu-kalkulators"
-};
-
-firebase.initializeApp(firebaseConfig);
-var db = firebase.database();
-var auth = firebase.auth();
-
 var defaultSchools = {
   A: [
     { name: 'AkategorijaLV', detail: '100% moto specializ\u0101cija, R\u012bga', url: 'https://akategorija.com', color: '#C0392B', initials: 'A kat', logoUrl: '' },
@@ -211,58 +198,27 @@ var schoolsData = JSON.parse(JSON.stringify(defaultSchools));
 var currentTab = 'A';
 var subscribersList = [];
 
-auth.onAuthStateChanged(function(user) {
-  if (user) {
-    document.getElementById('login-overlay').classList.add('hidden');
-    loadData();
-  } else {
-    document.getElementById('login-overlay').classList.remove('hidden');
-  }
-});
-
 function doLogin() {
   var email = document.getElementById('login-email').value;
   var pass = document.getElementById('login-pass').value;
   var errEl = document.getElementById('login-error');
   errEl.textContent = '';
-  auth.signInWithEmailAndPassword(email, pass).catch(function(err) {
+  if (typeof firebase === 'undefined' || !firebase.auth) {
+    errEl.textContent = 'Firebase nav pieejams. Parbaudiet interneta savienojumu.';
+    return;
+  }
+  firebase.auth().signInWithEmailAndPassword(email, pass).catch(function(err) {
     errEl.textContent = 'Nepareizs e-pasts vai parole';
   });
 }
 
-function doLogout() { auth.signOut(); }
-
-function loadData() {
-  db.ref('schools').on('value', function(snapshot) {
-    var fbData = snapshot.val();
-    if (fbData) {
-      ['A', 'B', 'C', 'D'].forEach(function(cat) {
-        if (fbData[cat]) { schoolsData[cat] = fbData[cat]; }
-      });
-    } else {
-      schoolsData = JSON.parse(JSON.stringify(defaultSchools));
-      db.ref('schools').set(schoolsData);
-    }
-    if (currentTab !== 'subscribers') renderEditor();
-  });
-
-  db.ref('subscribers').on('value', function(snapshot) {
-    subscribersList = [];
-    var fbSubs = snapshot.val();
-    if (fbSubs) {
-      Object.keys(fbSubs).forEach(function(key) {
-        subscribersList.push(fbSubs[key]);
-      });
-      subscribersList.sort(function(a, b) {
-        return new Date(b.timestamp) - new Date(a.timestamp);
-      });
-    }
-    if (currentTab === 'subscribers') renderSubscribers();
-  });
+function doLogout() {
+  if (typeof firebase !== 'undefined' && firebase.auth) {
+    firebase.auth().signOut();
+  }
 }
 
 function switchTab(tab, btn) {
-  // IMPORTANT: save current tab inputs BEFORE switching
   if (currentTab !== 'subscribers') {
     collectCurrentTabData();
   }
@@ -382,7 +338,11 @@ function removeSchool(idx) {
 
 function saveAll() {
   collectCurrentTabData();
-  db.ref('schools').set(schoolsData).then(function() {
+  if (typeof firebase === 'undefined') {
+    document.getElementById('save-msg').textContent = 'Firebase nav pieejams.';
+    return;
+  }
+  firebase.database().ref('schools').set(schoolsData).then(function() {
     document.getElementById('save-msg').textContent = 'Izmai\u0146as saglab\u0101tas!';
     setTimeout(function() { document.getElementById('save-msg').textContent = ''; }, 3000);
   }).catch(function(err) {
@@ -393,6 +353,59 @@ function saveAll() {
 document.getElementById('login-pass').addEventListener('keypress', function(e) {
   if (e.key === 'Enter') doLogin();
 });
-<\/script>
+
+renderEditor();
+</script>
+
+<!-- SCRIPT BLOCK 2: Firebase (loads separately, does not break UI if it fails) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script>
+try {
+  var firebaseConfig = {
+    apiKey: "AIzaSyBHj70dt8vxMe2K9MIn6MLCr3cMWP3mrLk",
+    authDomain: "autoskolu-kalkulators.firebaseapp.com",
+    databaseURL: "https://autoskolu-kalkulators-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "autoskolu-kalkulators"
+  };
+  firebase.initializeApp(firebaseConfig);
+
+  firebase.auth().onAuthStateChanged(function(user) {
+    if (user) {
+      document.getElementById('login-overlay').classList.add('hidden');
+      firebase.database().ref('schools').on('value', function(snapshot) {
+        var fbData = snapshot.val();
+        if (fbData) {
+          ['A', 'B', 'C', 'D'].forEach(function(cat) {
+            if (fbData[cat]) { schoolsData[cat] = fbData[cat]; }
+          });
+        } else {
+          schoolsData = JSON.parse(JSON.stringify(defaultSchools));
+          firebase.database().ref('schools').set(schoolsData);
+        }
+        if (currentTab !== 'subscribers') renderEditor();
+      });
+      firebase.database().ref('subscribers').on('value', function(snapshot) {
+        subscribersList = [];
+        var fbSubs = snapshot.val();
+        if (fbSubs) {
+          Object.keys(fbSubs).forEach(function(key) {
+            subscribersList.push(fbSubs[key]);
+          });
+          subscribersList.sort(function(a, b) {
+            return new Date(b.timestamp) - new Date(a.timestamp);
+          });
+        }
+        if (currentTab === 'subscribers') renderSubscribers();
+      });
+    } else {
+      document.getElementById('login-overlay').classList.remove('hidden');
+    }
+  });
+} catch(e) {
+  console.warn('Firebase init failed:', e);
+}
+</script>
 </body>
 </html>

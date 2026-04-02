@@ -59,7 +59,7 @@
     content: ''; position: absolute; top: 6px; right: 6px;
     width: 8px; height: 8px; background: var(--accent); border-radius: 50%;
   }
-  .cat-icon { font-size: 1.6rem; margin-bottom: 4px; display: block; }
+  .cat-icon { font-size: 1.6rem; margin-bottom: 4px; display: block; font-weight: 800; color: var(--accent); }
   .cat-label { font-size: 1.1rem; font-weight: 800; color: var(--accent); display: block; }
   .cat-desc { font-size: 0.65rem; color: var(--text-secondary); margin-top: 2px; display: block; line-height: 1.3; }
   .card {
@@ -208,12 +208,12 @@
 
 <div class="hero">
   <h1>Autoskolas Izmaksu Kalkulators</h1>
-  <p>Apr\u0113\u0137ini re\u0101l\u0101s izmaksas vad\u012bt\u0101ja apliec\u012bbas ieg\u016b\u0161anai Latvij\u0101</p>
+  <p>Apr&#x0113;&#x0137;ini re&#x0101;l&#x0101;s izmaksas vad&#x012b;t&#x0101;ja apliec&#x012b;bas ieg&#x016b;&#x0161;anai Latvij&#x0101;</p>
   <div class="badge">2025/2026 cenas</div>
 </div>
 
 <div class="container">
-  <div class="section-title">Izv\u0113lies kategoriju</div>
+  <div class="section-title">Izv&#x0113;lies kategoriju</div>
   <div class="category-grid">
     <div class="cat-btn active" data-cat="A" onclick="selectCategory('A')">
       <span class="cat-icon">A</span>
@@ -238,30 +238,30 @@
   </div>
 
   <div class="schools-section">
-    <div class="section-title">Top 3 autoskolas \u0161ai kategorijai</div>
+    <div class="section-title">Top 3 autoskolas &#x0161;ai kategorijai</div>
     <div class="schools-grid" id="schools-grid"></div>
   </div>
 
   <div class="card">
     <div class="card-header">
-      <h3>Re\u0123istr\u0101cija + Teorija</h3>
-      <span class="card-price" id="theory-price">\u20ac50</span>
+      <h3>Re&#x0123;istr&#x0101;cija + Teorija</h3>
+      <span class="card-price" id="theory-price">&#x20ac;50</span>
     </div>
-    <div class="card-note" id="theory-note">Teorijas kurss un re\u0123istr\u0101cija autoskol\u0101.</div>
+    <div class="card-note" id="theory-note">Teorijas kurss un re&#x0123;istr&#x0101;cija autoskol&#x0101;.</div>
   </div>
 
   <div class="card">
     <div class="card-header">
-      <h3>Brauk\u0161anas nodarb\u012bbas</h3>
-      <span class="card-price" id="driving-total-price">\u20ac500</span>
+      <h3>Brauk&#x0161;anas nodarb&#x012b;bas</h3>
+      <span class="card-price" id="driving-total-price">&#x20ac;500</span>
     </div>
     <div class="slider-section">
       <div class="slider-header">
         <div>
-          <span class="slider-label">Nodarb\u012bbu skaits</span>
+          <span class="slider-label">Nodarb&#x012b;bu skaits</span>
           <span class="min-badge" id="min-badge">min. 20</span>
         </div>
-        <span class="slider-value" id="lesson-count-display">20 <span>nodarb\u012bbas</span></span>
+        <span class="slider-value" id="lesson-count-display">20 <span>nodarb&#x012b;bas</span></span>
       </div>
       <input type="range" id="lesson-slider" min="1" max="60" value="20" oninput="updateDriving()">
       <div style="display:flex;justify-content:space-between;margin-top:6px;">
@@ -271,22 +271,22 @@
     </div>
     <div style="margin-top:14px;padding-top:12px;border-top:1px solid #F0EDE7;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
-        <span class="card-note">Vienas nodarb\u012bbas cena (2 akad\u0113misk\u0101s stundas)</span>
-        <span style="font-weight:700;color:var(--accent);font-size:0.9rem;" id="per-lesson-price">\u20ac25</span>
+        <span class="card-note">Vienas nodarb&#x012b;bas cena (2 akad&#x0113;misk&#x0101;s stundas)</span>
+        <span style="font-weight:700;color:var(--accent);font-size:0.9rem;" id="per-lesson-price">&#x20ac;25</span>
       </div>
-      <div class="card-note" style="margin-top:4px;" id="driving-note">Cena atkar\u012bga no instruktora.</div>
+      <div class="card-note" style="margin-top:4px;" id="driving-note">Cena atkar&#x012b;ga no instruktora.</div>
     </div>
   </div>
 
   <div class="subscribe-gate" id="subscribe-gate">
     <span class="sub-icon">&#128275;</span>
-    <h2>Ievadi e-pastu, lai redz\u0113tu visu</h2>
-    <p>Ievadi savu e-pastu, lai redz\u0113tu papildus pakalpojumus, CSDD eks\u0101menu izmaksas un kop\u0113jo summu.</p>
+    <h2>Ievadi e-pastu, lai redz&#x0113;tu visu</h2>
+    <p>Ievadi savu e-pastu, lai redz&#x0113;tu papildus pakalpojumus, CSDD eks&#x0101;menu izmaksas un kop&#x0113;jo summu.</p>
     <div class="subscribe-form">
       <input type="email" id="sub-email" placeholder="tavs@epasts.lv" autocomplete="email">
       <div class="sub-error" id="sub-error"></div>
-      <button id="sub-btn" onclick="handleSubscribe()">Atblo\u0137\u0113t kalkulatoru</button>
-      <div class="sub-privacy">M\u0113s nenosut\u012bsim spam. Tikai noder\u012bga inform\u0101cija.</div>
+      <button id="sub-btn" onclick="handleSubscribe()">Atblo&#x0137;&#x0113;t kalkulatoru</button>
+      <div class="sub-privacy">M&#x0113;s nenosut&#x012b;sim spam. Tikai noder&#x012b;ga inform&#x0101;cija.</div>
     </div>
   </div>
 
@@ -295,142 +295,79 @@
   <div class="section-title">Papildus pakalpojumi</div>
   <div class="card">
     <div class="check-row checked" onclick="toggleCheck(this, 'firstaid')">
-      <div class="check-box">\u2713</div>
+      <div class="check-box">&#x2713;</div>
       <div class="check-info">
-        <div class="name">Pirm\u0101s pal\u012bdz\u012bbas kurss</div>
-        <div class="desc">12+3 akad\u0113misk\u0101s stundas, 2 dienu apm\u0101c\u012bba</div>
+        <div class="name">Pirm&#x0101;s pal&#x012b;dz&#x012b;bas kurss</div>
+        <div class="desc">12+3 akad&#x0113;misk&#x0101;s stundas, 2 dienu apm&#x0101;c&#x012b;ba</div>
       </div>
-      <div class="check-price" id="firstaid-price">\u20ac55</div>
+      <div class="check-price" id="firstaid-price">&#x20ac;55</div>
     </div>
     <div class="check-row checked" onclick="toggleCheck(this, 'medical')">
-      <div class="check-box">\u2713</div>
+      <div class="check-box">&#x2713;</div>
       <div class="check-info">
-        <div class="name">Medic\u012bnisk\u0101 komisija</div>
-        <div class="desc">Autovad\u012bt\u0101ja vesel\u012bbas p\u0101rbaude</div>
+        <div class="name">Medic&#x012b;nisk&#x0101; komisija</div>
+        <div class="desc">Autovad&#x012b;t&#x0101;ja vesel&#x012b;bas p&#x0101;rbaude</div>
       </div>
-      <div class="check-price" id="medical-price">\u20ac40</div>
+      <div class="check-price" id="medical-price">&#x20ac;40</div>
     </div>
   </div>
 
-  <div class="section-title">CSDD Valsts eks\u0101meni</div>
+  <div class="section-title">CSDD Valsts eks&#x0101;meni</div>
   <div class="card csdd-card">
-    <div style="margin-bottom:10px;"><span class="csdd-tag">CSDD Maks\u0101jumi</span></div>
+    <div style="margin-bottom:10px;"><span class="csdd-tag">CSDD Maks&#x0101;jumi</span></div>
     <div class="check-row checked" onclick="toggleCheck(this, 'csdd-theory')">
-      <div class="check-box">\u2713</div>
+      <div class="check-box">&#x2713;</div>
       <div class="check-info">
-        <div class="name">Teor\u0113tiskais eks\u0101mens</div>
-        <div class="desc">CSDD valsts teorijas eks\u0101mens</div>
+        <div class="name">Teor&#x0113;tiskais eks&#x0101;mens</div>
+        <div class="desc">CSDD valsts teorijas eks&#x0101;mens</div>
       </div>
-      <div class="check-price">\u20ac11.40</div>
+      <div class="check-price">&#x20ac;11.40</div>
     </div>
     <div class="check-row checked" onclick="toggleCheck(this, 'csdd-driving')">
-      <div class="check-box">\u2713</div>
+      <div class="check-box">&#x2713;</div>
       <div class="check-info">
-        <div class="name">Vad\u012b\u0161anas eks\u0101mens</div>
+        <div class="name">Vad&#x012b;&#x0161;anas eks&#x0101;mens</div>
         <div class="desc" id="csdd-driving-desc">B kategorija</div>
       </div>
-      <div class="check-price" id="csdd-driving-price">\u20ac50.57</div>
+      <div class="check-price" id="csdd-driving-price">&#x20ac;50.57</div>
     </div>
     <div class="check-row checked" onclick="toggleCheck(this, 'csdd-license')">
-      <div class="check-box">\u2713</div>
+      <div class="check-box">&#x2713;</div>
       <div class="check-info">
-        <div class="name">Vad\u012bt\u0101ja apliec\u012bba</div>
-        <div class="desc">Apliec\u012bbas izsnieg\u0161ana</div>
+        <div class="name">Vad&#x012b;t&#x0101;ja apliec&#x012b;ba</div>
+        <div class="desc">Apliec&#x012b;bas izsnieg&#x0161;ana</div>
       </div>
-      <div class="check-price">\u20ac22.41</div>
+      <div class="check-price">&#x20ac;22.41</div>
     </div>
   </div>
 
   <div class="total-card" id="total-card">
-    <div class="total-label">Kop\u0113j\u0101s izmaksas</div>
-    <div class="total-amount" id="total-amount">\u20ac678<sup>.38</sup></div>
+    <div class="total-label">Kop&#x0113;j&#x0101;s izmaksas</div>
+    <div class="total-amount" id="total-amount">&#x20ac;678<sup>.38</sup></div>
     <div class="breakdown" id="breakdown"></div>
   </div>
 
   </div>
 
   <div class="disclaimer">
-    * Cenas ir orient\u0113jo\u0161as un var at\u0161\u0137irties atkar\u012bb\u0101 no autoskolas, fili\u0101les un instruktora.
-    Brauk\u0161anas nodarb\u012bbu skaits nor\u0101d\u012bts k\u0101 minim\u0101lais \u2014 re\u0101lais skaits var b\u016bt liel\u0101ks.
+    * Cenas ir orient&#x0113;jo&#x0161;as un var at&#x0161;&#x0137;irties atkar&#x012b;b&#x0101; no autoskolas, fili&#x0101;les un instruktora.
+    Brauk&#x0161;anas nodarb&#x012b;bu skaits nor&#x0101;d&#x012b;ts k&#x0101; minim&#x0101;lais &#x2014; re&#x0101;lais skaits var b&#x016b;t liel&#x0101;ks.
   </div>
   <div class="source-list">
-    Datu avoti: <a href="https://www.csdd.lv" target="_blank">CSDD</a> \u00b7
-    <a href="https://presto.lv" target="_blank">Presto</a> \u00b7
-    <a href="https://credoautoprieks.lv" target="_blank">Credo Autoprieks</a> \u00b7
-    <a href="https://dbs.lv" target="_blank">DBS</a> \u00b7
-    <a href="https://einsteins.lv" target="_blank">Ein\u0161teins</a> \u00b7
-    <a href="https://akategorija.com" target="_blank">AkategorijaLV</a> \u00b7
-    <a href="https://buts.lv" target="_blank">BUTS</a> \u00b7
-    <a href="https://www.fortuna.lv" target="_blank">Fort\u016bna</a>
+    Datu avoti: <a href="https://www.csdd.lv" target="_blank">CSDD</a> &#x00b7;
+    <a href="https://presto.lv" target="_blank">Presto</a> &#x00b7;
+    <a href="https://credoautoprieks.lv" target="_blank">Credo Autoprieks</a> &#x00b7;
+    <a href="https://dbs.lv" target="_blank">DBS</a> &#x00b7;
+    <a href="https://einsteins.lv" target="_blank">Ein&#x0161;teins</a> &#x00b7;
+    <a href="https://akategorija.com" target="_blank">AkategorijaLV</a> &#x00b7;
+    <a href="https://buts.lv" target="_blank">BUTS</a> &#x00b7;
+    <a href="https://www.fortuna.lv" target="_blank">Fort&#x016b;na</a>
   </div>
-  <a href="admin.html" class="admin-link">Administr\u0101cija</a>
+  <a href="admin.html" class="admin-link">Administr&#x0101;cija</a>
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"><\/script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"><\/script>
+<!-- SCRIPT BLOCK 1: UI functions (no Firebase dependency) -->
 <script>
-var firebaseConfig = {
-  apiKey: "AIzaSyBHj70dt8vxMe2K9MIn6MLCr3cMWP3mrLk",
-  authDomain: "autoskolu-kalkulators.firebaseapp.com",
-  databaseURL: "https://autoskolu-kalkulators-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "autoskolu-kalkulators"
-};
-
-firebase.initializeApp(firebaseConfig);
-var db = firebase.database();
-
-function checkSubscription() {
-  var saved = localStorage.getItem('autoskola_subscriber');
-  if (saved) { unlockContent(); }
-}
-
-function unlockContent() {
-  document.getElementById('subscribe-gate').classList.add('hidden');
-  var gated = document.getElementById('gated-content');
-  gated.classList.remove('locked');
-}
-
-function handleSubscribe() {
-  var emailInput = document.getElementById('sub-email');
-  var errorEl = document.getElementById('sub-error');
-  var btn = document.getElementById('sub-btn');
-  var email = emailInput.value.trim();
-  errorEl.textContent = '';
-  emailInput.classList.remove('error');
-  if (!email) {
-    errorEl.textContent = 'L\u016bdzu, ievadi e-pasta adresi.';
-    emailInput.classList.add('error');
-    return;
-  }
-  var emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
-  if (!emailRegex.test(email)) {
-    errorEl.textContent = 'L\u016bdzu, ievadi der\u012bgu e-pasta adresi.';
-    emailInput.classList.add('error');
-    return;
-  }
-  btn.disabled = true;
-  btn.textContent = 'Saglab\u0101...';
-  var subRef = db.ref('subscribers').push();
-  subRef.set({
-    email: email,
-    timestamp: new Date().toISOString(),
-    source: 'calculator'
-  }).then(function() {
-    localStorage.setItem('autoskola_subscriber', email);
-    unlockContent();
-  }).catch(function(err) {
-    errorEl.textContent = 'K\u013c\u016bda saglab\u0101jot. M\u0113\u0123ini v\u0113lreiz.';
-    btn.disabled = false;
-    btn.textContent = 'Atblo\u0137\u0113t kalkulatoru';
-  });
-}
-
-document.getElementById('sub-email').addEventListener('keypress', function(e) {
-  if (e.key === 'Enter') handleSubscribe();
-});
-
-checkSubscription();
-
 var defaultSchools = {
   A: [
     { name: 'AkategorijaLV', detail: '100% moto specializ\u0101cija, R\u012bga. Teorija + prakse no 2009.g.', url: 'https://akategorija.com', color: '#C0392B', initials: 'A kat', logoUrl: '' },
@@ -456,15 +393,16 @@ var defaultSchools = {
 
 var schools = JSON.parse(JSON.stringify(defaultSchools));
 
-db.ref('schools').on('value', function(snapshot) {
-  var fbData = snapshot.val();
-  if (fbData) {
-    ['A', 'B', 'C', 'D'].forEach(function(cat) {
-      if (fbData[cat]) { schools[cat] = fbData[cat]; }
-    });
-    updateSchools(currentCat);
-  }
-});
+var data = {
+  A: { theoryPrice: 50, theoryNote: '15 teorijas stundas (3 modu\u013ci pa 5 stund\u0101m) + CSDD re\u0123istr\u0101cija.', lessonPrice: 25, minLessons: 20, maxLessons: 40, drivingNote: 'Cena no \u20ac25/st. Minimums \u2014 20 akad\u0113misk\u0101s stundas (10 nodarb\u012bbas pa 2 ak.st.).', firstAid: 55, medical: 40, csddDriving: 42.69, csddDrivingDesc: 'A kategorija' },
+  B: { theoryPrice: 30, theoryNote: '55 teorijas stundas (11 modu\u013ci \u2014 8 e-m\u0101c\u012bba + 3 kl\u0101tien\u0113) + re\u0123istr\u0101cija autoskol\u0101.', lessonPrice: 40, minLessons: 20, maxLessons: 50, drivingNote: 'Cena no \u20ac30 l\u012bdz \u20ac64/nodarb\u012bbu atkar\u012bb\u0101 no instruktora. Vid\u0113ji ~\u20ac40. Minimums \u2014 10 nodarb\u012bbas (20 ak.st.).', firstAid: 55, medical: 40, csddDriving: 50.57, csddDrivingDesc: 'B kategorija' },
+  C: { theoryPrice: 70, theoryNote: '50 teorijas stundas (10 modu\u013ci) + Kods 95 + CSDD re\u0123istr\u0101cija. Prasa B kategorijas apliec\u012bbu.', lessonPrice: 31, minLessons: 20, maxLessons: 50, drivingNote: 'Cena no \u20ac31/st. Minimums \u2014 20 akad\u0113misk\u0101s stundas. Ietver brauk\u0161anu ar kravas auto.', firstAid: 55, medical: 40, csddDriving: 44.21, csddDrivingDesc: 'C kategorija (ar savu auto)' },
+  D: { theoryPrice: 70, theoryNote: '30 teorijas stundas (6 modu\u013ci) + CSDD re\u0123istr\u0101cija. Prasa B vai C kategorijas apliec\u012bbu.', lessonPrice: 39, minLessons: 12, maxLessons: 40, drivingNote: 'Cena no \u20ac39/st. Minimums \u2014 12 akad\u0113misk\u0101s stundas. Brauk\u0161ana ar autobusu.', firstAid: 55, medical: 40, csddDriving: 44.21, csddDrivingDesc: 'D kategorija' }
+};
+
+var currentCat = 'A';
+var lessonCount = 20;
+var options = { firstaid: true, medical: true, 'csdd-theory': true, 'csdd-driving': true, 'csdd-license': true };
 
 function updateSchools(cat) {
   var grid = document.getElementById('schools-grid');
@@ -475,7 +413,7 @@ function updateSchools(cat) {
   }
   grid.innerHTML = list.map(function(s, i) {
     var logoContent = (s.logoUrl && s.logoUrl.length > 0)
-      ? '<img src="' + s.logoUrl + '" alt="' + s.name + '">' 
+      ? '<img src="' + s.logoUrl + '" alt="' + s.name + '">'
       : (s.initials || s.name.charAt(0));
     var logoStyle = 'background:' + (s.color || '#1B4D3E');
     return '<a class="school-card" href="' + s.url + '" target="_blank" rel="noopener">' +
@@ -487,17 +425,6 @@ function updateSchools(cat) {
     '</a>';
   }).join('');
 }
-
-var data = {
-  A: { theoryPrice: 50, theoryNote: '15 teorijas stundas (3 modu\u013ci pa 5 stund\u0101m) + CSDD re\u0123istr\u0101cija.', lessonPrice: 25, minLessons: 20, maxLessons: 40, drivingNote: 'Cena no \u20ac25/st. Minimums \u2014 20 akad\u0113misk\u0101s stundas (10 nodarb\u012bbas pa 2 ak.st.).', firstAid: 55, medical: 40, csddDriving: 42.69, csddDrivingDesc: 'A kategorija' },
-  B: { theoryPrice: 30, theoryNote: '55 teorijas stundas (11 modu\u013ci \u2014 8 e-m\u0101c\u012bba + 3 kl\u0101tien\u0113) + re\u0123istr\u0101cija autoskol\u0101.', lessonPrice: 40, minLessons: 20, maxLessons: 50, drivingNote: 'Cena no \u20ac30 l\u012bdz \u20ac64/nodarb\u012bbu atkar\u012bb\u0101 no instruktora. Vid\u0113ji ~\u20ac40. Minimums \u2014 10 nodarb\u012bbas (20 ak.st.).', firstAid: 55, medical: 40, csddDriving: 50.57, csddDrivingDesc: 'B kategorija' },
-  C: { theoryPrice: 70, theoryNote: '50 teorijas stundas (10 modu\u013ci) + Kods 95 + CSDD re\u0123istr\u0101cija. Prasa B kategorijas apliec\u012bbu.', lessonPrice: 31, minLessons: 20, maxLessons: 50, drivingNote: 'Cena no \u20ac31/st. Minimums \u2014 20 akad\u0113misk\u0101s stundas. Ietver brauk\u0161anu ar kravas auto.', firstAid: 55, medical: 40, csddDriving: 44.21, csddDrivingDesc: 'C kategorija (ar savu auto)' },
-  D: { theoryPrice: 70, theoryNote: '30 teorijas stundas (6 modu\u013ci) + CSDD re\u0123istr\u0101cija. Prasa B vai C kategorijas apliec\u012bbu.', lessonPrice: 39, minLessons: 12, maxLessons: 40, drivingNote: 'Cena no \u20ac39/st. Minimums \u2014 12 akad\u0113misk\u0101s stundas. Brauk\u0161ana ar autobusu.', firstAid: 55, medical: 40, csddDriving: 44.21, csddDrivingDesc: 'D kategorija' }
-};
-
-var currentCat = 'A';
-var lessonCount = 20;
-var options = { firstaid: true, medical: true, 'csdd-theory': true, 'csdd-driving': true, 'csdd-license': true };
 
 function selectCategory(cat) {
   currentCat = cat;
@@ -565,7 +492,89 @@ function calculateTotal() {
   }).join('');
 }
 
+function checkSubscription() {
+  var saved = localStorage.getItem('autoskola_subscriber');
+  if (saved) { unlockContent(); }
+}
+
+function unlockContent() {
+  document.getElementById('subscribe-gate').classList.add('hidden');
+  var gated = document.getElementById('gated-content');
+  gated.classList.remove('locked');
+}
+
+function handleSubscribe() {
+  var emailInput = document.getElementById('sub-email');
+  var errorEl = document.getElementById('sub-error');
+  var btn = document.getElementById('sub-btn');
+  var email = emailInput.value.trim();
+  errorEl.textContent = '';
+  emailInput.classList.remove('error');
+  if (!email) {
+    errorEl.textContent = 'L\u016bdzu, ievadi e-pasta adresi.';
+    emailInput.classList.add('error');
+    return;
+  }
+  var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    errorEl.textContent = 'L\u016bdzu, ievadi der\u012bgu e-pasta adresi.';
+    emailInput.classList.add('error');
+    return;
+  }
+  btn.disabled = true;
+  btn.textContent = 'Saglab\u0101...';
+  if (typeof firebase !== 'undefined') {
+    var subRef = firebase.database().ref('subscribers').push();
+    subRef.set({
+      email: email,
+      timestamp: new Date().toISOString(),
+      source: 'calculator'
+    }).then(function() {
+      localStorage.setItem('autoskola_subscriber', email);
+      unlockContent();
+    }).catch(function(err) {
+      errorEl.textContent = 'K\u013c\u016bda saglab\u0101jot. M\u0113\u0123ini v\u0113lreiz.';
+      btn.disabled = false;
+      btn.textContent = 'Atblo\u0137\u0113t kalkulatoru';
+    });
+  } else {
+    localStorage.setItem('autoskola_subscriber', email);
+    unlockContent();
+  }
+}
+
+document.getElementById('sub-email').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') handleSubscribe();
+});
+
+checkSubscription();
 selectCategory('A');
-<\/script>
+</script>
+
+<!-- SCRIPT BLOCK 2: Firebase (loads separately, does not break UI if it fails) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+try {
+  var firebaseConfig = {
+    apiKey: "AIzaSyBHj70dt8vxMe2K9MIn6MLCr3cMWP3mrLk",
+    authDomain: "autoskolu-kalkulators.firebaseapp.com",
+    databaseURL: "https://autoskolu-kalkulators-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "autoskolu-kalkulators"
+  };
+  firebase.initializeApp(firebaseConfig);
+  firebase.database().ref('schools').on('value', function(snapshot) {
+    var fbData = snapshot.val();
+    if (fbData) {
+      ['A', 'B', 'C', 'D'].forEach(function(cat) {
+        if (fbData[cat]) { schools[cat] = fbData[cat]; }
+      });
+      updateSchools(currentCat);
+    }
+  });
+} catch(e) {
+  console.warn('Firebase init failed:', e);
+}
+</script>
 </body>
 </html>
