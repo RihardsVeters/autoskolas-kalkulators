@@ -80,12 +80,14 @@
   .editor-card h3 { font-size: 0.95rem; color: var(--accent); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
   .field-group { margin-bottom: 10px; }
   .field-group label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .field-group input {
+  .field-group input, .field-group textarea {
     width: 100%; padding: 10px 12px; border: 1.5px solid var(--border);
     border-radius: 8px; font-size: 0.88rem; outline: none; font-family: inherit;
   }
-  .field-group input:focus { border-color: var(--accent); }
+  .field-group textarea { height: 50px; resize: vertical; }
+  .field-group input:focus, .field-group textarea:focus { border-color: var(--accent); }
   .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .field-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
   .logo-preview {
     width: 48px; height: 48px; border-radius: 10px; overflow: hidden;
     display: inline-flex; align-items: center; justify-content: center;
@@ -129,6 +131,19 @@
     font-size: 0.75rem; font-weight: 700; padding: 3px 10px; border-radius: 6px; margin-left: 8px;
   }
   .sub-empty { color: var(--text-secondary); font-size: 0.85rem; font-style: italic; padding: 16px 0; }
+  .price-cat-tabs { display: flex; gap: 4px; margin-bottom: 14px; flex-wrap: wrap; }
+  .price-cat-tab {
+    padding: 6px 14px; border: 1.5px solid var(--border); background: #F8F6F1;
+    border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.78rem;
+    font-family: inherit; transition: all 0.2s;
+  }
+  .price-cat-tab.active { background: var(--accent); color: white; border-color: var(--accent); }
+  .price-cat-tab:hover:not(.active) { border-color: var(--accent-light); }
+  .price-school-card {
+    background: #FAFAF7; border-radius: 10px; padding: 14px; margin-bottom: 10px;
+    border: 1px solid var(--border);
+  }
+  .price-school-card h4 { font-size: 0.88rem; color: var(--accent); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
 </style>
 </head>
 <body>
@@ -151,10 +166,11 @@
 
 <div class="admin-container">
   <div class="tab-bar" id="tab-bar">
-    <button class="tab-btn active" onclick="switchTab('A', this)">&#x1F3CD;&#xFE0F; A kategorija</button>
-    <button class="tab-btn" onclick="switchTab('B', this)">&#x1F697; B kategorija</button>
-    <button class="tab-btn" onclick="switchTab('C', this)">&#x1F69B; C kategorija</button>
-    <button class="tab-btn" onclick="switchTab('D', this)">&#x1F68C; D kategorija</button>
+    <button class="tab-btn active" onclick="switchTab('A', this)">&#x1F3CD;&#xFE0F; A kat.</button>
+    <button class="tab-btn" onclick="switchTab('B', this)">&#x1F697; B kat.</button>
+    <button class="tab-btn" onclick="switchTab('C', this)">&#x1F69B; C kat.</button>
+    <button class="tab-btn" onclick="switchTab('D', this)">&#x1F68C; D kat.</button>
+    <button class="tab-btn sub-tab" onclick="switchTab('prices', this)">&#x1F4B0; Cenas</button>
     <button class="tab-btn sub-tab" onclick="switchTab('subscribers', this)">&#x1F4E7; Subscribers</button>
   </div>
 
@@ -169,7 +185,7 @@
   <a href="index.html" class="back-link">&#x2190; Atpaka&#x013c; uz kalkulatoru</a>
 </div>
 
-<!-- SCRIPT BLOCK 1: UI functions (no Firebase dependency) -->
+<!-- SCRIPT BLOCK 1: UI functions -->
 <script>
 var defaultSchools = {
   A: [
@@ -197,6 +213,8 @@ var defaultSchools = {
 var schoolsData = JSON.parse(JSON.stringify(defaultSchools));
 var currentTab = 'A';
 var subscribersList = [];
+var pricesData = null;
+var priceCat = 'A';
 
 function doLogin() {
   var email = document.getElementById('login-email').value;
@@ -219,7 +237,7 @@ function doLogout() {
 }
 
 function switchTab(tab, btn) {
-  if (currentTab !== 'subscribers') {
+  if (currentTab !== 'subscribers' && currentTab !== 'prices') {
     collectCurrentTabData();
   }
   currentTab = tab;
@@ -228,15 +246,21 @@ function switchTab(tab, btn) {
   if (tab === 'subscribers') {
     document.getElementById('btn-row').style.display = 'none';
     renderSubscribers();
+  } else if (tab === 'prices') {
+    document.getElementById('btn-row').style.display = 'none';
+    renderPricesEditor();
   } else {
     document.getElementById('btn-row').style.display = '';
+    document.getElementById('add-btn').style.display = '';
+    document.getElementById('add-btn').textContent = '+ Pievienot skolu';
+    document.getElementById('add-btn').onclick = addSchool;
     renderEditor();
   }
   document.getElementById('save-msg').textContent = '';
 }
 
 function renderEditor() {
-  if (currentTab === 'subscribers') return;
+  if (currentTab === 'subscribers' || currentTab === 'prices') return;
   var area = document.getElementById('editor-area');
   var list = schoolsData[currentTab] || [];
   var html = '';
@@ -285,6 +309,190 @@ function renderSubscribers() {
   area.innerHTML = html;
 }
 
+// ======== PRICES EDITOR ========
+
+var priceFields = [
+  { key: 'registracija', label: 'Re\u0123istr\u0101cija (\u20ac)' },
+  { key: 'dokumenti', label: 'Dokumenti (\u20ac)' },
+  { key: 'teorija', label: 'Teorija (\u20ac)' },
+  { key: 'brauksana_stunda', label: 'Brauk\u0161ana/st (\u20ac)' },
+  { key: 'brauksana_stunda_max', label: 'Brauk\u0161. maks. (\u20ac)' },
+  { key: 'min_stundas', label: 'Min. stundas' },
+  { key: 'laukums_stunda', label: 'Laukums/st (\u20ac)' },
+  { key: 'eksamens', label: 'Eks\u0101mens (\u20ac)' },
+  { key: 'teorijas_ieskaite', label: 'Teor. ieskaite (\u20ac)' }
+];
+
+function switchPriceCat(cat, btn) {
+  collectPriceData();
+  priceCat = cat;
+  document.querySelectorAll('.price-cat-tab').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  renderPriceSchools();
+}
+
+function renderPricesEditor() {
+  var area = document.getElementById('editor-area');
+  var html = '<div class="editor-card">';
+  html += '<h3>Autoskolu cenas</h3>';
+  html += '<div class="price-cat-tabs">';
+  var cats = ['A', 'B', 'C', 'D'];
+  cats.forEach(function(c) {
+    var active = c === priceCat ? ' active' : '';
+    html += '<button class="price-cat-tab' + active + '" onclick="switchPriceCat(\'' + c + '\', this)">' + c + ' kategorija</button>';
+  });
+  html += '</div>';
+  html += '<div id="price-schools-area"></div>';
+  html += '</div>';
+
+  // Save + Add buttons for prices
+  html += '<div class="btn-row">';
+  html += '<button class="save-btn" onclick="savePrices()">Saglab\u0101t cenas</button>';
+  html += '<button class="add-btn" onclick="addPriceSchool()">+ Pievienot skolu</button>';
+  html += '</div>';
+
+  area.innerHTML = html;
+  renderPriceSchools();
+}
+
+function renderPriceSchools() {
+  var container = document.getElementById('price-schools-area');
+  if (!container) return;
+  if (!pricesData || !pricesData.schools) {
+    container.innerHTML = '<div class="sub-empty">Nav cenu datu. Palaidiet seed skriptu vai pievienojiet manu\u0101li.</div>';
+    return;
+  }
+  var schools = pricesData.schools;
+  var keys = Object.keys(schools);
+  var html = '';
+  var count = 0;
+
+  keys.forEach(function(schoolKey) {
+    var school = schools[schoolKey];
+    if (!school.categories || !school.categories[priceCat]) return;
+    count++;
+    var cat = school.categories[priceCat];
+    html += '<div class="price-school-card">';
+    html += '<h4><span>' + (school.name || schoolKey) + '</span><button class="remove-btn" onclick="removePriceSchoolCat(\'' + schoolKey.replace(/'/g, "\\'") + '\')">No\u0146emt no ' + priceCat + '</button></h4>';
+
+    // School meta
+    html += '<div class="field-row">';
+    html += '<div class="field-group"><label>Nosaukums</label><input data-price-school="' + schoolKey + '" data-price-meta="name" value="' + (school.name || '').replace(/"/g, '&quot;') + '"></div>';
+    html += '<div class="field-group"><label>M\u0101jaslapa</label><input data-price-school="' + schoolKey + '" data-price-meta="website" value="' + (school.website || '').replace(/"/g, '&quot;') + '"></div>';
+    html += '</div>';
+
+    // Price fields
+    html += '<div class="field-row-3">';
+    priceFields.forEach(function(f) {
+      var val = cat[f.key];
+      var displayVal = (val === null || val === undefined) ? '' : val;
+      html += '<div class="field-group"><label>' + f.label + '</label><input type="number" step="0.01" data-price-school="' + schoolKey + '" data-price-field="' + f.key + '" value="' + displayVal + '" placeholder="tuk\u0161s = N/A"></div>';
+    });
+    html += '</div>';
+
+    // Note
+    html += '<div class="field-group"><label>Piez\u012bme</label><textarea data-price-school="' + schoolKey + '" data-price-field="piez">' + (cat.piez || '') + '</textarea></div>';
+    html += '</div>';
+  });
+
+  if (count === 0) {
+    html = '<div class="sub-empty">Nav skolu ar ' + priceCat + ' kategoriju. Nospiediet "+ Pievienot skolu".</div>';
+  }
+  container.innerHTML = html;
+}
+
+function collectPriceData() {
+  if (!pricesData || !pricesData.schools) return;
+  // Collect meta fields
+  var metaInputs = document.querySelectorAll('input[data-price-school][data-price-meta]');
+  metaInputs.forEach(function(inp) {
+    var sk = inp.getAttribute('data-price-school');
+    var field = inp.getAttribute('data-price-meta');
+    if (pricesData.schools[sk]) {
+      pricesData.schools[sk][field] = inp.value;
+    }
+  });
+  // Collect price fields
+  var priceInputs = document.querySelectorAll('input[data-price-school][data-price-field]');
+  priceInputs.forEach(function(inp) {
+    var sk = inp.getAttribute('data-price-school');
+    var field = inp.getAttribute('data-price-field');
+    if (pricesData.schools[sk] && pricesData.schools[sk].categories && pricesData.schools[sk].categories[priceCat]) {
+      var val = inp.value.trim();
+      if (val === '') {
+        pricesData.schools[sk].categories[priceCat][field] = null;
+      } else {
+        pricesData.schools[sk].categories[priceCat][field] = parseFloat(val);
+      }
+    }
+  });
+  // Collect textareas (piez)
+  var textareas = document.querySelectorAll('textarea[data-price-school][data-price-field]');
+  textareas.forEach(function(ta) {
+    var sk = ta.getAttribute('data-price-school');
+    var field = ta.getAttribute('data-price-field');
+    if (pricesData.schools[sk] && pricesData.schools[sk].categories && pricesData.schools[sk].categories[priceCat]) {
+      pricesData.schools[sk].categories[priceCat][field] = ta.value;
+    }
+  });
+}
+
+function addPriceSchool() {
+  collectPriceData();
+  if (!pricesData) pricesData = { schools: {}, lastUpdated: '' };
+  if (!pricesData.schools) pricesData.schools = {};
+  var newKey = 'JaunaSkola_' + Date.now();
+  pricesData.schools[newKey] = {
+    name: 'Jauna autoskola',
+    website: 'https://',
+    categories: {}
+  };
+  pricesData.schools[newKey].categories[priceCat] = {
+    teorija: null,
+    brauksana_stunda: null,
+    min_stundas: null,
+    piez: ''
+  };
+  renderPriceSchools();
+}
+
+function removePriceSchoolCat(schoolKey) {
+  if (!pricesData || !pricesData.schools || !pricesData.schools[schoolKey]) return;
+  var name = pricesData.schools[schoolKey].name || schoolKey;
+  if (confirm('No\u0146emt "' + name + '" no ' + priceCat + ' kategorijas?')) {
+    collectPriceData();
+    delete pricesData.schools[schoolKey].categories[priceCat];
+    // If no categories left, remove the school entirely
+    var remaining = Object.keys(pricesData.schools[schoolKey].categories || {});
+    if (remaining.length === 0) {
+      delete pricesData.schools[schoolKey];
+    }
+    renderPriceSchools();
+  }
+}
+
+function savePrices() {
+  collectPriceData();
+  if (typeof firebase === 'undefined') {
+    document.getElementById('save-msg').textContent = 'Firebase nav pieejams.';
+    return;
+  }
+  var now = new Date();
+  var dateStr = now.toLocaleDateString('lv-LV', {
+    year: 'numeric', month: '2-digit', day: '2-digit',
+    hour: '2-digit', minute: '2-digit'
+  });
+  pricesData.lastUpdated = dateStr;
+  firebase.database().ref('prices').set(pricesData).then(function() {
+    document.getElementById('save-msg').textContent = 'Cenas saglab\u0101tas!';
+    setTimeout(function() { document.getElementById('save-msg').textContent = ''; }, 3000);
+  }).catch(function(err) {
+    document.getElementById('save-msg').textContent = 'K\u013c\u016bda: ' + err.message;
+  });
+}
+
+// ======== SCHOOL EDITOR FUNCTIONS ========
+
 function updateLogoPreview(idx, url) {
   var preview = document.getElementById('preview-' + idx);
   if (!preview) return;
@@ -297,7 +505,7 @@ function updateLogoPreview(idx, url) {
 }
 
 function collectCurrentTabData() {
-  if (currentTab === 'subscribers') return;
+  if (currentTab === 'subscribers' || currentTab === 'prices') return;
   var inputs = document.querySelectorAll('input[data-idx][data-field]');
   inputs.forEach(function(input) {
     var idx = parseInt(input.getAttribute('data-idx'));
@@ -309,7 +517,7 @@ function collectCurrentTabData() {
 }
 
 function addSchool() {
-  if (currentTab === 'subscribers') return;
+  if (currentTab === 'subscribers' || currentTab === 'prices') return;
   collectCurrentTabData();
   if (!schoolsData[currentTab]) schoolsData[currentTab] = [];
   schoolsData[currentTab].push({
@@ -325,7 +533,7 @@ function addSchool() {
 }
 
 function removeSchool(idx) {
-  if (currentTab === 'subscribers') return;
+  if (currentTab === 'subscribers' || currentTab === 'prices') return;
   collectCurrentTabData();
   if (schoolsData[currentTab] && schoolsData[currentTab][idx] !== undefined) {
     var name = schoolsData[currentTab][idx].name;
@@ -337,6 +545,10 @@ function removeSchool(idx) {
 }
 
 function saveAll() {
+  if (currentTab === 'prices') {
+    savePrices();
+    return;
+  }
   collectCurrentTabData();
   if (typeof firebase === 'undefined') {
     document.getElementById('save-msg').textContent = 'Firebase nav pieejams.';
@@ -357,7 +569,7 @@ document.getElementById('login-pass').addEventListener('keypress', function(e) {
 renderEditor();
 </script>
 
-<!-- SCRIPT BLOCK 2: Firebase (loads separately, does not break UI if it fails) -->
+<!-- SCRIPT BLOCK 2: Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -384,7 +596,7 @@ try {
           schoolsData = JSON.parse(JSON.stringify(defaultSchools));
           firebase.database().ref('schools').set(schoolsData);
         }
-        if (currentTab !== 'subscribers') renderEditor();
+        if (currentTab !== 'subscribers' && currentTab !== 'prices') renderEditor();
       });
       firebase.database().ref('subscribers').on('value', function(snapshot) {
         subscribersList = [];
@@ -398,6 +610,15 @@ try {
           });
         }
         if (currentTab === 'subscribers') renderSubscribers();
+      });
+      firebase.database().ref('prices').on('value', function(snapshot) {
+        var fbPrices = snapshot.val();
+        if (fbPrices) {
+          pricesData = fbPrices;
+        } else {
+          pricesData = { schools: {}, lastUpdated: '' };
+        }
+        if (currentTab === 'prices') renderPriceSchools();
       });
     } else {
       document.getElementById('login-overlay').classList.remove('hidden');
