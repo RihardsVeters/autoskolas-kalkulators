@@ -3,175 +3,159 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin | Autoskolas Kalkulators</title>
+<title>Admin Panelis</title>
 <style>
   :root {
-    --bg: #F5F0E8; --card: #FFFFFF; --accent: #1B4D3E; --accent-light: #2A7A5E;
-    --highlight: #E8A838; --text: #1A1A1A; --text-sec: #5A5A5A;
-    --border: #D4CFC5; --danger: #C0392B; --radius: 14px;
+    --bg: #F5F0E8;
+    --card: #FFFFFF;
+    --accent: #1B4D3E;
+    --accent-light: #2A7A5E;
+    --highlight: #E8A838;
+    --highlight-light: #FFF3DC;
+    --text: #1A1A1A;
+    --text-secondary: #5A5A5A;
+    --border: #D4CFC5;
+    --danger: #C0392B;
     --shadow: 0 2px 16px rgba(27,77,62,0.08);
+    --radius: 14px;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-
-  /* Login */
+  body {
+    font-family: 'Segoe UI', 'Helvetica Neue', system-ui, sans-serif;
+    background: var(--bg); color: var(--text);
+    min-height: 100vh; padding-bottom: 60px;
+  }
   .login-overlay {
-    position: fixed; inset: 0; background: var(--bg);
-    display: flex; align-items: center; justify-content: center; z-index: 100;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--accent); z-index: 9999;
+    display: flex; align-items: center; justify-content: center;
   }
   .login-overlay.hidden { display: none; }
   .login-box {
-    background: var(--card); border-radius: var(--radius); padding: 40px 32px;
-    box-shadow: 0 8px 40px rgba(27,77,62,0.15); max-width: 380px; width: 100%; text-align: center;
+    background: white; border-radius: 20px; padding: 40px;
+    max-width: 380px; width: 90%; text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
   }
-  .login-box h2 { font-size: 1.3rem; font-weight: 800; color: var(--accent); margin-bottom: 6px; }
-  .login-box p { font-size: 0.85rem; color: var(--text-sec); margin-bottom: 24px; }
+  .login-box h2 { color: var(--accent); margin-bottom: 6px; font-size: 1.3rem; }
+  .login-box p { color: var(--text-secondary); font-size: 0.85rem; margin-bottom: 20px; }
   .login-box input {
-    display: block; width: 100%; padding: 12px 16px; margin-bottom: 12px;
-    border: 2px solid var(--border); border-radius: 10px;
-    font-size: 0.9rem; outline: none; transition: border-color 0.2s;
+    width: 100%; padding: 12px 14px; border: 2px solid var(--border);
+    border-radius: 8px; font-size: 0.9rem; margin-bottom: 10px; outline: none;
+    font-family: inherit;
   }
   .login-box input:focus { border-color: var(--accent); }
   .login-box button {
-    width: 100%; padding: 14px; background: var(--accent); color: white;
-    border: none; border-radius: 10px; font-size: 1rem; font-weight: 700;
-    cursor: pointer; transition: all 0.2s;
+    width: 100%; padding: 12px; background: var(--accent); color: white;
+    border: none; border-radius: 8px; font-size: 0.95rem; font-weight: 700;
+    cursor: pointer; margin-top: 4px; font-family: inherit;
   }
   .login-box button:hover { background: var(--accent-light); }
-  .login-error { color: var(--danger); font-size: 0.82rem; margin-top: 10px; display: none; }
-
-  /* Admin layout */
-  .admin-content.hidden { display: none; }
-  .topbar {
-    background: var(--accent); color: white; padding: 16px 24px;
+  .login-error { color: var(--danger); font-size: 0.8rem; margin-top: 8px; min-height: 20px; }
+  .admin-header {
+    background: var(--accent); color: white; padding: 20px 24px;
     display: flex; justify-content: space-between; align-items: center;
   }
-  .topbar h1 { font-size: 1.1rem; font-weight: 700; }
-  .topbar-actions { display: flex; gap: 10px; align-items: center; }
-  .topbar-user { font-size: 0.78rem; opacity: 0.7; }
-  .topbar button {
-    padding: 6px 14px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3);
-    background: transparent; color: white; font-size: 0.8rem; font-weight: 600;
-    cursor: pointer; transition: all 0.2s;
+  .admin-header h1 { font-size: 1.3rem; font-weight: 800; }
+  .logout-btn {
+    background: rgba(255,255,255,0.15); color: white; border: none;
+    padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: 600;
+    font-size: 0.85rem; font-family: inherit;
   }
-  .topbar button:hover { background: rgba(255,255,255,0.1); }
-
+  .logout-btn:hover { background: rgba(255,255,255,0.25); }
   .admin-container { max-width: 800px; margin: 0 auto; padding: 24px 16px; }
-
-  .cat-tabs {
-    display: flex; gap: 8px; margin-bottom: 24px; flex-wrap: wrap;
+  .tab-bar { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; }
+  .tab-btn {
+    padding: 10px 20px; border: 2px solid var(--border); background: var(--card);
+    border-radius: 10px; cursor: pointer; font-weight: 700; font-size: 0.85rem;
+    transition: all 0.2s; font-family: inherit;
   }
-  .cat-tab {
-    padding: 10px 20px; border-radius: 10px; border: 2px solid var(--border);
-    background: var(--card); cursor: pointer; font-weight: 700;
-    font-size: 0.9rem; color: var(--text-sec); transition: all 0.2s;
-  }
-  .cat-tab:hover { border-color: var(--accent-light); }
-  .cat-tab.active { border-color: var(--accent); background: var(--accent); color: white; }
-
-  .school-editor {
+  .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+  .tab-btn:hover:not(.active) { border-color: var(--accent-light); }
+  .tab-btn.sub-tab { background: var(--highlight-light); border-color: var(--highlight); color: var(--accent); }
+  .tab-btn.sub-tab.active { background: var(--highlight); color: var(--accent); border-color: var(--highlight); }
+  .editor-card {
     background: var(--card); border-radius: var(--radius); padding: 20px;
-    margin-bottom: 16px; box-shadow: var(--shadow);
-    border: 1px solid rgba(0,0,0,0.04);
+    margin-bottom: 14px; box-shadow: var(--shadow);
   }
-  .school-editor-header {
-    display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+  .editor-card h3 { font-size: 0.95rem; color: var(--accent); margin-bottom: 12px; }
+  .field-group { margin-bottom: 10px; }
+  .field-group label { display: block; font-size: 0.75rem; font-weight: 600; color: var(--text-secondary); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .field-group input {
+    width: 100%; padding: 10px 12px; border: 1.5px solid var(--border);
+    border-radius: 8px; font-size: 0.88rem; outline: none; font-family: inherit;
   }
-  .school-editor-header h3 { font-size: 0.9rem; font-weight: 700; color: var(--accent); }
-  .school-rank-badge {
-    width: 28px; height: 28px; border-radius: 50%; background: var(--highlight);
-    color: var(--accent); display: flex; align-items: center; justify-content: center;
-    font-size: 0.8rem; font-weight: 800;
-  }
-
-  .field-row { margin-bottom: 12px; }
-  .field-row label {
-    display: block; font-size: 0.75rem; font-weight: 600;
-    color: var(--text-sec); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px;
-  }
-  .field-row input {
-    width: 100%; padding: 10px 14px; border: 2px solid var(--border);
-    border-radius: 8px; font-size: 0.88rem; outline: none; transition: border-color 0.2s;
-  }
-  .field-row input:focus { border-color: var(--accent); }
-
-  .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-
+  .field-group input:focus { border-color: var(--accent); }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
   .logo-preview {
-    width: 56px; height: 56px; border-radius: 10px; overflow: hidden;
-    display: flex; align-items: center; justify-content: center;
-    font-weight: 900; font-size: 0.7rem; color: white;
-    margin-top: 6px; background-size: contain; background-repeat: no-repeat; background-position: center;
+    width: 48px; height: 48px; border-radius: 10px; overflow: hidden;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 0.6rem; color: white; margin-top: 6px;
   }
   .logo-preview img { width: 100%; height: 100%; object-fit: contain; }
-
   .save-btn {
-    display: block; width: 100%; padding: 16px; margin-top: 24px;
-    background: var(--accent); color: white; border: none;
-    border-radius: var(--radius); font-size: 1rem; font-weight: 700;
-    cursor: pointer; transition: all 0.2s;
-    box-shadow: 0 4px 20px rgba(27,77,62,0.2);
+    width: 100%; padding: 14px; background: var(--accent); color: white;
+    border: none; border-radius: 10px; font-size: 1rem; font-weight: 700;
+    cursor: pointer; margin-top: 10px; font-family: inherit;
   }
-  .save-btn:hover { background: var(--accent-light); transform: translateY(-1px); }
-  .save-btn.saved { background: #27ae60; }
-
-  .save-status {
-    text-align: center; margin-top: 12px; font-size: 0.82rem;
-    color: var(--accent); font-weight: 600; display: none;
-  }
-
+  .save-btn:hover { background: var(--accent-light); }
+  .save-msg { text-align: center; color: var(--accent); font-weight: 600; font-size: 0.9rem; margin-top: 10px; min-height: 24px; }
   .back-link {
     display: block; text-align: center; margin-top: 20px;
-    font-size: 0.82rem; color: var(--accent-light); text-decoration: none;
+    color: var(--accent-light); text-decoration: none; font-size: 0.85rem;
   }
-  .back-link:hover { text-decoration: underline; }
+  .sub-list { list-style: none; }
+  .sub-item {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 10px 0; border-bottom: 1px solid #F0EDE7; font-size: 0.88rem;
+  }
+  .sub-item:last-child { border-bottom: none; }
+  .sub-email-text { font-weight: 600; color: var(--text); }
+  .sub-date { font-size: 0.75rem; color: var(--text-secondary); }
+  .sub-count {
+    display: inline-block; background: var(--highlight); color: var(--accent);
+    font-size: 0.75rem; font-weight: 700; padding: 3px 10px; border-radius: 6px; margin-left: 8px;
+  }
+  .sub-empty { color: var(--text-secondary); font-size: 0.85rem; font-style: italic; padding: 16px 0; }
 </style>
 </head>
 <body>
 
-<!-- Login overlay -->
 <div class="login-overlay" id="login-overlay">
   <div class="login-box">
     <h2>Admin Panelis</h2>
     <p>Ielogi ar savu Firebase e-pastu un paroli</p>
-    <input type="email" id="login-email" placeholder="E-pasts">
-    <input type="password" id="login-password" placeholder="Parole" onkeydown="if(event.key==='Enter')doLogin()">
+    <input type="email" id="login-email" placeholder="E-pasts" autocomplete="email">
+    <input type="password" id="login-pass" placeholder="Parole" autocomplete="current-password">
     <button onclick="doLogin()">Ielogoties</button>
-    <div class="login-error" id="login-error">Nepareizs e-pasts vai parole</div>
+    <div class="login-error" id="login-error"></div>
   </div>
 </div>
 
-<!-- Admin content -->
-<div class="admin-content hidden" id="admin-content">
-  <div class="topbar">
-    <h1>Autoskolas Admin</h1>
-    <div class="topbar-actions">
-      <span class="topbar-user" id="user-email"></span>
-      <button onclick="doLogout()">Iziet</button>
-    </div>
-  </div>
-
-  <div class="admin-container">
-    <div class="cat-tabs" id="cat-tabs">
-      <div class="cat-tab active" data-cat="A" onclick="switchTab('A')">🏍️ A kategorija</div>
-      <div class="cat-tab" data-cat="B" onclick="switchTab('B')">🚗 B kategorija</div>
-      <div class="cat-tab" data-cat="C" onclick="switchTab('C')">🚛 C kategorija</div>
-      <div class="cat-tab" data-cat="D" onclick="switchTab('D')">🚌 D kategorija</div>
-    </div>
-
-    <div id="editors"></div>
-
-    <button class="save-btn" id="save-btn" onclick="saveAll()">Saglabāt izmaiņas</button>
-    <div class="save-status" id="save-status">Izmaiņas saglabātas!</div>
-
-    <a href="index.html" class="back-link">← Atpakaļ uz kalkulatoru</a>
-  </div>
+<div class="admin-header">
+  <h1>Autoskolas Admin</h1>
+  <button class="logout-btn" onclick="doLogout()">Iziet</button>
 </div>
 
-<!-- Firebase SDK -->
+<div class="admin-container">
+  <div class="tab-bar" id="tab-bar">
+    <button class="tab-btn active" onclick="switchTab('A', this)">🏍️ A kategorija</button>
+    <button class="tab-btn" onclick="switchTab('B', this)">🚗 B kategorija</button>
+    <button class="tab-btn" onclick="switchTab('C', this)">🚛 C kategorija</button>
+    <button class="tab-btn" onclick="switchTab('D', this)">🚌 D kategorija</button>
+    <button class="tab-btn sub-tab" onclick="switchTab('subscribers', this)">📧 Subscribers</button>
+  </div>
+
+  <div id="editor-area"></div>
+
+  <button class="save-btn" id="save-btn" onclick="saveAll()">Saglabāt izmaiņas</button>
+  <div class="save-msg" id="save-msg"></div>
+
+  <a href="index.html" class="back-link">← Atpakaļ uz kalkulatoru</a>
+</div>
+
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script>
 // REPLACE WITH YOUR FIREBASE CONFIG
 var firebaseConfig = {
@@ -182,25 +166,22 @@ var firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-var auth = firebase.auth();
 var db = firebase.database();
-
-var currentTab = 'A';
-var schoolsData = null;
+var auth = firebase.auth();
 
 var defaultSchools = {
   A: [
     { name: 'AkategorijaLV', detail: '100% moto specializācija, Rīga', url: 'https://akategorija.com', color: '#C0392B', initials: 'A kat', logoUrl: '' },
-    { name: 'DBS Autoskola', detail: 'Drošas Braukšanas Skola, A kat. no €115', url: 'https://dbs.lv', color: '#2C3E50', initials: 'DBS', logoUrl: '' },
+    { name: 'DBS Autoskola', detail: 'Drošas Braukšanas Skola, A kat. no \u20AC115', url: 'https://dbs.lv', color: '#2C3E50', initials: 'DBS', logoUrl: '' },
     { name: 'Presto', detail: 'Lielākais filiāļu tīkls Latvijā', url: 'https://presto.lv', color: '#1B4D3E', initials: 'P', logoUrl: '' }
   ],
   B: [
     { name: 'Presto', detail: '76% CSDD eksāmena nokārtošana, 50+ filiāles', url: 'https://presto.lv', color: '#1B4D3E', initials: 'P', logoUrl: '' },
-    { name: 'Credo Autoprieks', detail: 'Lielākā autoskola Latvijā, teorija no €69', url: 'https://credoautoprieks.lv', color: '#D4A017', initials: 'CA', logoUrl: '' },
+    { name: 'Credo Autoprieks', detail: 'Lielākā autoskola Latvijā, teorija no \u20AC69', url: 'https://credoautoprieks.lv', color: '#D4A017', initials: 'CA', logoUrl: '' },
     { name: 'DBS Autoskola', detail: 'Drošas Braukšanas Skola, individuāla pieeja', url: 'https://dbs.lv', color: '#2C3E50', initials: 'DBS', logoUrl: '' }
   ],
   C: [
-    { name: 'Credo Autoprieks', detail: 'C kat. teorija no €69, filiāles visā Latvijā', url: 'https://credoautoprieks.lv', color: '#D4A017', initials: 'CA', logoUrl: '' },
+    { name: 'Credo Autoprieks', detail: 'C kat. teorija no \u20AC69, filiāles visā Latvijā', url: 'https://credoautoprieks.lv', color: '#D4A017', initials: 'CA', logoUrl: '' },
     { name: 'BUTS', detail: 'C + 95.kods vienā kursā, Aizkraukle', url: 'https://buts.lv', color: '#E74C3C', initials: 'BUTS', logoUrl: '' },
     { name: 'Presto', detail: 'C, C1, CE kategorijas, tālmācība pieejama', url: 'https://presto.lv', color: '#1B4D3E', initials: 'P', logoUrl: '' }
   ],
@@ -211,155 +192,154 @@ var defaultSchools = {
   ]
 };
 
-// Login
-function doLogin() {
-  var email = document.getElementById('login-email').value;
-  var password = document.getElementById('login-password').value;
-  var errEl = document.getElementById('login-error');
-  errEl.style.display = 'none';
+var schoolsData = JSON.parse(JSON.stringify(defaultSchools));
+var currentTab = 'A';
+var subscribersList = [];
 
-  auth.signInWithEmailAndPassword(email, password).catch(function(error) {
-    errEl.textContent = 'Nepareizs e-pasts vai parole';
-    errEl.style.display = 'block';
-  });
-}
-
-function doLogout() {
-  auth.signOut();
-}
-
-// Auth state
 auth.onAuthStateChanged(function(user) {
   if (user) {
     document.getElementById('login-overlay').classList.add('hidden');
-    document.getElementById('admin-content').classList.remove('hidden');
-    document.getElementById('user-email').textContent = user.email;
     loadData();
   } else {
     document.getElementById('login-overlay').classList.remove('hidden');
-    document.getElementById('admin-content').classList.add('hidden');
   }
 });
 
-function loadData() {
-  db.ref('schools').once('value').then(function(snapshot) {
-    schoolsData = snapshot.val();
-    if (!schoolsData) {
-      // Initialize with defaults
-      schoolsData = JSON.parse(JSON.stringify(defaultSchools));
-      db.ref('schools').set(schoolsData);
-    }
-    renderEditors();
+function doLogin() {
+  var email = document.getElementById('login-email').value;
+  var pass = document.getElementById('login-pass').value;
+  var errEl = document.getElementById('login-error');
+  errEl.textContent = '';
+  auth.signInWithEmailAndPassword(email, pass).catch(function(err) {
+    errEl.textContent = 'Nepareizs e-pasts vai parole';
   });
 }
 
-function switchTab(cat) {
-  currentTab = cat;
-  document.querySelectorAll('.cat-tab').forEach(function(t) { t.classList.remove('active'); });
-  document.querySelector('.cat-tab[data-cat="' + cat + '"]').classList.add('active');
-  collectCurrentData();
-  renderEditors();
+function doLogout() { auth.signOut(); }
+
+function loadData() {
+  db.ref('schools').on('value', function(snapshot) {
+    var fbData = snapshot.val();
+    if (fbData) {
+      schoolsData = fbData;
+    } else {
+      schoolsData = JSON.parse(JSON.stringify(defaultSchools));
+      db.ref('schools').set(schoolsData);
+    }
+    renderEditor();
+  });
+
+  db.ref('subscribers').on('value', function(snapshot) {
+    subscribersList = [];
+    var fbSubs = snapshot.val();
+    if (fbSubs) {
+      Object.keys(fbSubs).forEach(function(key) {
+        subscribersList.push(fbSubs[key]);
+      });
+      subscribersList.sort(function(a, b) {
+        return new Date(b.timestamp) - new Date(a.timestamp);
+      });
+    }
+    if (currentTab === 'subscribers') renderSubscribers();
+  });
 }
 
-function renderEditors() {
-  var container = document.getElementById('editors');
+function switchTab(tab, btn) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  if (tab === 'subscribers') {
+    document.getElementById('save-btn').style.display = 'none';
+    renderSubscribers();
+  } else {
+    document.getElementById('save-btn').style.display = '';
+    renderEditor();
+  }
+  document.getElementById('save-msg').textContent = '';
+}
+
+function renderEditor() {
+  if (currentTab === 'subscribers') return;
+  var area = document.getElementById('editor-area');
   var list = schoolsData[currentTab] || [];
   var html = '';
-
-  for (var i = 0; i < list.length; i++) {
-    var s = list[i];
-    var logoPreview = s.logoUrl
-      ? '<img src="' + s.logoUrl + '" alt="logo">'
+  list.forEach(function(s, i) {
+    var previewBg = 'background:' + s.color + ';';
+    var previewContent = s.logoUrl
+      ? '<img src="' + s.logoUrl + '" style="width:100%;height:100%;object-fit:contain;">'
       : s.initials;
-
-    html += '<div class="school-editor" data-index="' + i + '">' +
-      '<div class="school-editor-header">' +
-        '<h3>' + s.name + '</h3>' +
-        '<div class="school-rank-badge">' + (i + 1) + '</div>' +
-      '</div>' +
-      '<div class="field-grid">' +
-        '<div class="field-row">' +
-          '<label>Nosaukums</label>' +
-          '<input type="text" data-field="name" value="' + escHtml(s.name) + '">' +
-        '</div>' +
-        '<div class="field-row">' +
-          '<label>Mājas lapas URL</label>' +
-          '<input type="text" data-field="url" value="' + escHtml(s.url) + '">' +
-        '</div>' +
-      '</div>' +
+    html += '<div class="editor-card">' +
+      '<h3>#' + (i + 1) + ' ' + s.name + '</h3>' +
+      '<div class="field-group"><label>Nosaukums</label><input data-cat="' + currentTab + '" data-idx="' + i + '" data-field="name" value="' + (s.name || '') + '"></div>' +
+      '<div class="field-group"><label>Apraksts</label><input data-cat="' + currentTab + '" data-idx="' + i + '" data-field="detail" value="' + (s.detail || '') + '"></div>' +
+      '<div class="field-group"><label>URL</label><input data-cat="' + currentTab + '" data-idx="' + i + '" data-field="url" value="' + (s.url || '') + '"></div>' +
+      '<div class="field-group"><label>Logo URL (tukšs = rāda iniciāļus)</label><input data-cat="' + currentTab + '" data-idx="' + i + '" data-field="logoUrl" value="' + (s.logoUrl || '') + '" oninput="updateLogoPreview(' + i + ', this.value)"></div>' +
       '<div class="field-row">' +
-        '<label>Apraksts</label>' +
-        '<input type="text" data-field="detail" value="' + escHtml(s.detail) + '">' +
+        '<div class="field-group"><label>Krāsa</label><input type="color" data-cat="' + currentTab + '" data-idx="' + i + '" data-field="color" value="' + (s.color || '#1B4D3E') + '"></div>' +
+        '<div class="field-group"><label>Iniciāļi</label><input data-cat="' + currentTab + '" data-idx="' + i + '" data-field="initials" value="' + (s.initials || '') + '"></div>' +
       '</div>' +
-      '<div class="field-grid">' +
-        '<div class="field-row">' +
-          '<label>Logo URL (attēla adrese)</label>' +
-          '<input type="text" data-field="logoUrl" value="' + escHtml(s.logoUrl || '') + '" oninput="updateLogoPreview(this, ' + i + ')">' +
-          '<div class="logo-preview" id="logo-preview-' + i + '" style="background:' + s.color + '">' + logoPreview + '</div>' +
-        '</div>' +
-        '<div class="field-row">' +
-          '<label>Fona krāsa (hex)</label>' +
-          '<input type="text" data-field="color" value="' + escHtml(s.color) + '">' +
-          '<div class="field-row" style="margin-top:8px">' +
-            '<label>Iniciāļi (ja nav logo)</label>' +
-            '<input type="text" data-field="initials" value="' + escHtml(s.initials) + '">' +
-          '</div>' +
-        '</div>' +
-      '</div>' +
+      '<div class="field-group"><label>Priekšskatījums</label><div class="logo-preview" id="preview-' + i + '" style="' + previewBg + '">' + previewContent + '</div></div>' +
     '</div>';
-  }
-
-  container.innerHTML = html;
+  });
+  area.innerHTML = html;
 }
 
-function escHtml(str) {
-  return String(str || '').replace(/&/g,'&').replace(/"/g,'"').replace(/</g,'<').replace(/>/g,'>');
-}
-
-function updateLogoPreview(input, idx) {
-  var preview = document.getElementById('logo-preview-' + idx);
-  var url = input.value.trim();
-  if (url) {
-    preview.innerHTML = '<img src="' + url + '" alt="logo">';
+function renderSubscribers() {
+  var area = document.getElementById('editor-area');
+  var html = '<div class="editor-card">' +
+    '<h3>\uD83D\uDCE7 Subscriber saraksts <span class="sub-count">' + subscribersList.length + '</span></h3>';
+  if (subscribersList.length === 0) {
+    html += '<div class="sub-empty">Pagaidām nav neviena subscriber.</div>';
   } else {
-    var initials = schoolsData[currentTab][idx].initials || '?';
-    preview.innerHTML = initials;
+    html += '<ul class="sub-list">';
+    subscribersList.forEach(function(sub) {
+      var dateStr = sub.timestamp ? new Date(sub.timestamp).toLocaleString('lv-LV') : '\u2014';
+      html += '<li class="sub-item">' +
+        '<span class="sub-email-text">' + sub.email + '</span>' +
+        '<span class="sub-date">' + dateStr + '</span>' +
+      '</li>';
+    });
+    html += '</ul>';
+  }
+  html += '</div>';
+  area.innerHTML = html;
+}
+
+function updateLogoPreview(idx, url) {
+  var preview = document.getElementById('preview-' + idx);
+  if (!preview) return;
+  if (url && url.trim()) {
+    preview.innerHTML = '<img src="' + url.trim() + '" style="width:100%;height:100%;object-fit:contain;">';
+  } else {
+    var initialsInput = document.querySelector('input[data-idx="' + idx + '"][data-field="initials"]');
+    preview.innerHTML = initialsInput ? initialsInput.value : '';
   }
 }
 
 function collectCurrentData() {
-  var editors = document.querySelectorAll('.school-editor');
-  editors.forEach(function(editor) {
-    var idx = parseInt(editor.getAttribute('data-index'));
-    var inputs = editor.querySelectorAll('input');
-    inputs.forEach(function(input) {
-      var field = input.getAttribute('data-field');
-      if (field && schoolsData[currentTab][idx]) {
-        schoolsData[currentTab][idx][field] = input.value;
-      }
-    });
+  document.querySelectorAll('input[data-cat][data-idx][data-field]').forEach(function(input) {
+    var cat = input.getAttribute('data-cat');
+    var idx = parseInt(input.getAttribute('data-idx'));
+    var field = input.getAttribute('data-field');
+    if (schoolsData[cat] && schoolsData[cat][idx]) {
+      schoolsData[cat][idx][field] = input.value;
+    }
   });
 }
 
 function saveAll() {
   collectCurrentData();
-  var btn = document.getElementById('save-btn');
-  var status = document.getElementById('save-status');
-
   db.ref('schools').set(schoolsData).then(function() {
-    btn.textContent = 'Saglabāts!';
-    btn.classList.add('saved');
-    status.style.display = 'block';
-    setTimeout(function() {
-      btn.textContent = 'Saglabāt izmaiņas';
-      btn.classList.remove('saved');
-      status.style.display = 'none';
-    }, 3000);
+    document.getElementById('save-msg').textContent = 'Izmaiņas saglabātas!';
+    setTimeout(function() { document.getElementById('save-msg').textContent = ''; }, 3000);
   }).catch(function(err) {
-    btn.textContent = 'Kļūda! Mēģini vēlreiz';
-    setTimeout(function() { btn.textContent = 'Saglabāt izmaiņas'; }, 3000);
+    document.getElementById('save-msg').textContent = 'Kļūda: ' + err.message;
   });
 }
+
+document.getElementById('login-pass').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') doLogin();
+});
 </script>
 </body>
 </html>

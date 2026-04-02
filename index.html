@@ -159,14 +159,66 @@
     text-decoration: none; transition: color 0.2s;
   }
   .admin-link:hover { color: var(--accent-light); }
+
+  /* Subscribe Overlay */
+  .subscribe-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(27, 77, 62, 0.97);
+    z-index: 9999; display: flex; align-items: center; justify-content: center;
+    opacity: 1; transition: opacity 0.4s ease;
+  }
+  .subscribe-overlay.hidden { opacity: 0; pointer-events: none; }
+  .subscribe-box {
+    background: white; border-radius: 20px; padding: 48px 36px;
+    max-width: 420px; width: 90%; text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    transform: translateY(0); transition: transform 0.4s ease;
+  }
+  .subscribe-overlay.hidden .subscribe-box { transform: translateY(30px); }
+  .subscribe-box .sub-icon { font-size: 3rem; margin-bottom: 16px; display: block; }
+  .subscribe-box h2 { color: var(--accent); font-size: 1.4rem; font-weight: 800; margin-bottom: 8px; }
+  .subscribe-box p { color: var(--text-secondary); font-size: 0.88rem; line-height: 1.5; margin-bottom: 24px; }
+  .subscribe-form { display: flex; flex-direction: column; gap: 12px; }
+  .subscribe-form input[type="email"] {
+    width: 100%; padding: 14px 16px; border: 2px solid var(--border);
+    border-radius: 10px; font-size: 0.95rem; outline: none;
+    transition: border-color 0.2s; font-family: inherit;
+  }
+  .subscribe-form input[type="email"]:focus { border-color: var(--accent); }
+  .subscribe-form input[type="email"].error { border-color: var(--danger); }
+  .subscribe-form button {
+    width: 100%; padding: 14px; background: var(--accent); color: white;
+    border: none; border-radius: 10px; font-size: 1rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s; font-family: inherit;
+  }
+  .subscribe-form button:hover { background: var(--accent-light); transform: translateY(-1px); }
+  .subscribe-form button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+  .sub-error { color: var(--danger); font-size: 0.78rem; min-height: 20px; }
+  .sub-privacy { font-size: 0.68rem; color: var(--text-secondary); margin-top: 4px; }
   @media (max-width: 480px) {
     .hero h1 { font-size: 1.6rem; }
     .total-amount { font-size: 2.2rem; }
     .breakdown { grid-template-columns: 1fr; }
+    .subscribe-box { padding: 36px 24px; }
   }
 </style>
 </head>
 <body>
+
+<!-- Subscribe Overlay -->
+<div class="subscribe-overlay" id="subscribe-overlay">
+  <div class="subscribe-box">
+    <span class="sub-icon">🚗</span>
+    <h2>Autoskolas Kalkulators</h2>
+    <p>Ievadi savu e-pastu, lai piekļūtu bezmaksas kalkulatoram un uzzinātu reālās autoskolas izmaksas Latvijā.</p>
+    <div class="subscribe-form">
+      <input type="email" id="sub-email" placeholder="tavs@epasts.lv" autocomplete="email">
+      <div class="sub-error" id="sub-error"></div>
+      <button id="sub-btn" onclick="handleSubscribe()">Piekļūt kalkulatoram</button>
+      <div class="sub-privacy">Mēs nenosūtīsim spam. Tikai noderīga informācija.</div>
+    </div>
+  </div>
+</div>
 
 <div class="hero">
   <h1>Autoskolas Izmaksu Kalkulators</h1>
@@ -209,7 +261,7 @@
       <h3>📋 Reģistrācija + Teorija</h3>
       <span class="card-price" id="theory-price">€50</span>
     </div>
-    <div class="card-note" id="theory-note">Teorijas kurss un reģistrācija autoskolā. Ietver CSDD reģistrāciju un teorijas nodarbības.</div>
+    <div class="card-note" id="theory-note">Teorijas kurss un reģistrācija autoskolā.</div>
   </div>
 
   <div class="card">
@@ -236,7 +288,7 @@
         <span class="card-note">Vienas nodarbības cena (2 akadēmiskās stundas)</span>
         <span style="font-weight:700;color:var(--accent);font-size:0.9rem;" id="per-lesson-price">€25</span>
       </div>
-      <div class="card-note" style="margin-top:4px;" id="driving-note">Cena atkarīga no instruktora un mācību transportlīdzekļa.</div>
+      <div class="card-note" style="margin-top:4px;" id="driving-note">Cena atkarīga no instruktora.</div>
     </div>
   </div>
 
@@ -297,7 +349,7 @@
 
   <div class="disclaimer">
     * Cenas ir orientējošas un var atšķirties atkarībā no autoskolas, filiāles un instruktora.
-    Braukšanas nodarbību skaits norādīts kā minimālais — reālais skaits var būt lielāks atkarībā no apmācāmā prasmēm.
+    Braukšanas nodarbību skaits norādīts kā minimālais — reālais skaits var būt lielāks.
   </div>
   <div class="source-list">
     Datu avoti: <a href="https://www.csdd.lv" target="_blank">CSDD</a> ·
@@ -316,7 +368,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
 // REPLACE WITH YOUR FIREBASE CONFIG
-const firebaseConfig = {
+var firebaseConfig = {
   apiKey: "AIzaSyBHj70dt8vxMe2K9MIn6MLCr3cMWP3mrLk",
   authDomain: "autoskolu-kalkulators.firebaseapp.com",
   databaseURL: "https://autoskolu-kalkulators-default-rtdb.europe-west1.firebasedatabase.app",
@@ -324,10 +376,75 @@ const firebaseConfig = {
 };
 
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
+var db = firebase.database();
 
-// Fallback school data (used if Firebase is not configured or unavailable)
-const defaultSchools = {
+// ===== SUBSCRIBE GATE =====
+function checkSubscription() {
+  var saved = localStorage.getItem('autoskola_subscriber');
+  if (saved) { hideOverlay(); }
+}
+
+function hideOverlay() {
+  var overlay = document.getElementById('subscribe-overlay');
+  overlay.classList.add('hidden');
+  document.body.style.overflow = '';
+  setTimeout(function() { overlay.style.display = 'none'; }, 400);
+}
+
+function handleSubscribe() {
+  var emailInput = document.getElementById('sub-email');
+  var errorEl = document.getElementById('sub-error');
+  var btn = document.getElementById('sub-btn');
+  var email = emailInput.value.trim();
+
+  errorEl.textContent = '';
+  emailInput.classList.remove('error');
+
+  if (!email) {
+    errorEl.textContent = 'Lūdzu, ievadi e-pasta adresi.';
+    emailInput.classList.add('error');
+    return;
+  }
+
+  var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    errorEl.textContent = 'Lūdzu, ievadi derīgu e-pasta adresi.';
+    emailInput.classList.add('error');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Saglabā...';
+
+  if (firebaseConfig.apiKey !== 'YOUR_API_KEY') {
+    var subRef = db.ref('subscribers').push();
+    subRef.set({
+      email: email,
+      timestamp: new Date().toISOString(),
+      source: 'calculator'
+    }).then(function() {
+      localStorage.setItem('autoskola_subscriber', email);
+      hideOverlay();
+    }).catch(function(err) {
+      errorEl.textContent = 'Kļūda saglabājot. Mēģini vēlreiz.';
+      btn.disabled = false;
+      btn.textContent = 'Piekļūt kalkulatoram';
+    });
+  } else {
+    localStorage.setItem('autoskola_subscriber', email);
+    hideOverlay();
+  }
+}
+
+document.getElementById('sub-email').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') handleSubscribe();
+});
+
+document.body.style.overflow = 'hidden';
+checkSubscription();
+
+// ===== SCHOOL DATA =====
+var defaultSchools = {
   A: [
     { name: 'AkategorijaLV', detail: '100% moto specializācija, Rīga', url: 'https://akategorija.com', color: '#C0392B', initials: 'A kat', logoUrl: '' },
     { name: 'DBS Autoskola', detail: 'Drošas Braukšanas Skola, A kat. no €115', url: 'https://dbs.lv', color: '#2C3E50', initials: 'DBS', logoUrl: '' },
@@ -350,12 +467,11 @@ const defaultSchools = {
   ]
 };
 
-let schools = JSON.parse(JSON.stringify(defaultSchools));
+var schools = JSON.parse(JSON.stringify(defaultSchools));
 
-// Try loading from Firebase
 if (firebaseConfig.apiKey !== 'YOUR_API_KEY') {
-  db.ref('schools').on('value', (snapshot) => {
-    const fbData = snapshot.val();
+  db.ref('schools').on('value', function(snapshot) {
+    var fbData = snapshot.val();
     if (fbData) {
       schools = fbData;
       updateSchools(currentCat);
@@ -364,35 +480,33 @@ if (firebaseConfig.apiKey !== 'YOUR_API_KEY') {
 }
 
 function updateSchools(cat) {
-  const grid = document.getElementById('schools-grid');
-  const list = schools[cat] || [];
-  grid.innerHTML = list.map((s, i) => {
-    const logoContent = s.logoUrl
+  var grid = document.getElementById('schools-grid');
+  var list = schools[cat] || [];
+  grid.innerHTML = list.map(function(s, i) {
+    var logoContent = s.logoUrl
       ? '<img src="' + s.logoUrl + '" alt="' + s.name + '">'
       : s.initials;
-    const logoStyle = s.logoUrl
-      ? 'background:' + s.color
-      : 'background:' + s.color;
+    var logoStyle = 'background:' + s.color;
     return '<a class="school-card" href="' + s.url + '" target="_blank" rel="noopener">' +
       '<span class="school-rank">' + (i + 1) + '</span>' +
       '<div class="school-logo" style="' + logoStyle + '">' + logoContent + '</div>' +
       '<div class="school-name">' + s.name + '</div>' +
       '<div class="school-detail">' + s.detail + '</div>' +
-      '<div class="school-link-hint">Atvērt mājas lapu →</div>' +
+      '<div class="school-link-hint">Atvērt mājas lapu \u2192</div>' +
     '</a>';
   }).join('');
 }
 
-const data = {
+var data = {
   A: { theoryPrice: 50, theoryNote: '15 teorijas stundas (3 moduļi pa 5 stundām) + CSDD reģistrācija.', lessonPrice: 25, minLessons: 20, maxLessons: 40, drivingNote: 'Cena no €25/st. Minimums — 20 akadēmiskās stundas (10 nodarbības pa 2 ak.st.).', firstAid: 55, medical: 40, csddDriving: 42.69, csddDrivingDesc: 'A kategorija' },
   B: { theoryPrice: 30, theoryNote: '55 teorijas stundas (11 moduļi — 8 e-mācība + 3 klātienē) + reģistrācija autoskolā.', lessonPrice: 40, minLessons: 20, maxLessons: 50, drivingNote: 'Cena no €30 līdz €64/nodarbību atkarībā no instruktora. Vidēji ~€40. Minimums — 10 nodarbības (20 ak.st.).', firstAid: 55, medical: 40, csddDriving: 50.57, csddDrivingDesc: 'B kategorija' },
   C: { theoryPrice: 70, theoryNote: '50 teorijas stundas (10 moduļi) + Kods 95 + CSDD reģistrācija. Prasa B kategorijas apliecību.', lessonPrice: 31, minLessons: 20, maxLessons: 50, drivingNote: 'Cena no €31/st. Minimums — 20 akadēmiskās stundas. Ietver braukšanu ar kravas auto.', firstAid: 55, medical: 40, csddDriving: 44.21, csddDrivingDesc: 'C kategorija (ar savu auto)' },
   D: { theoryPrice: 70, theoryNote: '30 teorijas stundas (6 moduļi) + CSDD reģistrācija. Prasa B vai C kategorijas apliecību.', lessonPrice: 39, minLessons: 12, maxLessons: 40, drivingNote: 'Cena no €39/st. Minimums — 12 akadēmiskās stundas. Braukšana ar autobusu.', firstAid: 55, medical: 40, csddDriving: 44.21, csddDrivingDesc: 'D kategorija' }
 };
 
-let currentCat = 'A';
-let lessonCount = 20;
-let options = { firstaid: true, medical: true, 'csdd-theory': true, 'csdd-driving': true, 'csdd-license': true };
+var currentCat = 'A';
+var lessonCount = 20;
+var options = { firstaid: true, medical: true, 'csdd-theory': true, 'csdd-driving': true, 'csdd-license': true };
 
 function selectCategory(cat) {
   currentCat = cat;
@@ -400,13 +514,13 @@ function selectCategory(cat) {
   document.querySelector('.cat-btn[data-cat="' + cat + '"]').classList.add('active');
   updateSchools(cat);
   var d = data[cat];
-  document.getElementById('theory-price').textContent = '€' + d.theoryPrice;
+  document.getElementById('theory-price').textContent = '\u20AC' + d.theoryPrice;
   document.getElementById('theory-note').textContent = d.theoryNote;
-  document.getElementById('per-lesson-price').textContent = '€' + d.lessonPrice;
+  document.getElementById('per-lesson-price').textContent = '\u20AC' + d.lessonPrice;
   document.getElementById('driving-note').textContent = d.drivingNote;
-  document.getElementById('firstaid-price').textContent = '€' + d.firstAid;
-  document.getElementById('medical-price').textContent = '€' + d.medical;
-  document.getElementById('csdd-driving-price').textContent = '€' + d.csddDriving.toFixed(2);
+  document.getElementById('firstaid-price').textContent = '\u20AC' + d.firstAid;
+  document.getElementById('medical-price').textContent = '\u20AC' + d.medical;
+  document.getElementById('csdd-driving-price').textContent = '\u20AC' + d.csddDriving.toFixed(2);
   document.getElementById('csdd-driving-desc').textContent = d.csddDrivingDesc;
   document.getElementById('min-badge').textContent = 'min. ' + d.minLessons;
   var slider = document.getElementById('lesson-slider');
@@ -425,7 +539,7 @@ function updateDriving() {
   slider.style.setProperty('--progress', progress + '%');
   var totalDriving = lessonCount * d.lessonPrice;
   document.getElementById('lesson-count-display').innerHTML = lessonCount + ' <span>nodarbības</span>';
-  document.getElementById('driving-total-price').textContent = '€' + totalDriving;
+  document.getElementById('driving-total-price').textContent = '\u20AC' + totalDriving;
   calculateTotal();
 }
 
@@ -453,10 +567,10 @@ function calculateTotal() {
   if (csddTotal > 0) { total += csddTotal; parts.push({ label: 'CSDD eksāmeni', amt: csddTotal }); }
   var whole = Math.floor(total);
   var cents = Math.round((total - whole) * 100).toString().padStart(2, '0');
-  document.getElementById('total-amount').innerHTML = '€' + whole + '<sup>.' + cents + '</sup>';
+  document.getElementById('total-amount').innerHTML = '\u20AC' + whole + '<sup>.' + cents + '</sup>';
   var breakdownEl = document.getElementById('breakdown');
   breakdownEl.innerHTML = parts.map(function(p) {
-    return '<div class="breakdown-item"><span>' + p.label + '</span><span class="amt">€' + p.amt.toFixed(2) + '</span></div>';
+    return '<div class="breakdown-item"><span>' + p.label + '</span><span class="amt">\u20AC' + p.amt.toFixed(2) + '</span></div>';
   }).join('');
 }
 
