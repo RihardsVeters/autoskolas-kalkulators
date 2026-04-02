@@ -72,6 +72,25 @@
     padding: 8px 12px; background: var(--highlight-light); border-radius: 8px;
     border-left: 3px solid var(--highlight);
   }
+  .csdd-section {
+    margin-top: 12px; margin-bottom: 12px; padding: 12px 14px;
+    background: #F0F7F4; border-radius: 10px; border: 1px solid #D0E6DA;
+  }
+  .csdd-title {
+    font-size: 0.72rem; font-weight: 700; color: var(--accent);
+    text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;
+  }
+  .csdd-grid { display: flex; gap: 8px; flex-wrap: wrap; }
+  .csdd-stat {
+    flex: 1; min-width: 100px; background: white; border-radius: 8px;
+    padding: 8px 10px; text-align: center;
+  }
+  .csdd-stat-label { font-size: 0.65rem; color: var(--text-sec); margin-bottom: 4px; }
+  .csdd-stat-pct { font-size: 1.1rem; font-weight: 800; }
+  .csdd-stat-pct.good { color: #27AE60; }
+  .csdd-stat-pct.mid { color: var(--highlight); }
+  .csdd-stat-pct.low { color: #E74C3C; }
+  .csdd-stat-detail { font-size: 0.6rem; color: var(--text-sec); margin-top: 2px; }
   .loading { text-align: center; padding: 40px; color: var(--text-sec); font-size: 0.9rem; }
   .back-link {
     display: block; text-align: center; margin-top: 24px;
@@ -172,6 +191,49 @@ function renderSchools() {
       }
     });
     html += '</div>';
+
+    // CSDD statistics
+    if (school.csdd) {
+      var csdd = school.csdd;
+      var hasStats = false;
+      var statsHtml = '';
+
+      // Theory
+      if (csdd.teorija && csdd.teorija.kartoja > 0) {
+        hasStats = true;
+        var pct = csdd.teorija.procents;
+        var cls = pct >= 70 ? 'good' : (pct >= 50 ? 'mid' : 'low');
+        statsHtml += '<div class="csdd-stat">';
+        statsHtml += '<div class="csdd-stat-label">Teorija</div>';
+        statsHtml += '<div class="csdd-stat-pct ' + cls + '">' + pct + '%</div>';
+        statsHtml += '<div class="csdd-stat-detail">' + csdd.teorija.nokartoja + '/' + csdd.teorija.kartoja + '</div>';
+        statsHtml += '</div>';
+      }
+
+      // Driving for current category
+      var drivingKey = '';
+      if (currentCat === 'A') drivingKey = 'brauksana_A';
+      else if (currentCat === 'B') drivingKey = 'brauksana_B';
+      else drivingKey = 'brauksana_parejie';
+
+      if (csdd[drivingKey] && csdd[drivingKey].kartoja > 0) {
+        hasStats = true;
+        var dpct = csdd[drivingKey].procents;
+        var dcls = dpct >= 60 ? 'good' : (dpct >= 40 ? 'mid' : 'low');
+        statsHtml += '<div class="csdd-stat">';
+        statsHtml += '<div class="csdd-stat-label">Brauk&#x0161;ana (' + currentCat + ')</div>';
+        statsHtml += '<div class="csdd-stat-pct ' + dcls + '">' + dpct + '%</div>';
+        statsHtml += '<div class="csdd-stat-detail">' + csdd[drivingKey].nokartoja + '/' + csdd[drivingKey].kartoja + '</div>';
+        statsHtml += '</div>';
+      }
+
+      if (hasStats) {
+        html += '<div class="csdd-section">';
+        html += '<div class="csdd-title">&#x1F4CA; CSDD eks&#x0101;menu statistika</div>';
+        html += '<div class="csdd-grid">' + statsHtml + '</div>';
+        html += '</div>';
+      }
+    }
 
     if (cat.piez) {
       html += '<div class="school-note">' + cat.piez + '</div>';
